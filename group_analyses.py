@@ -7,33 +7,67 @@ from mne.datasets import limo
 from mne.viz import plot_compare_evokeds
 from mne.stats import linear_regression
 
-# load epochs
-limo_epochs = limo.load_data(subject=2)
-limo_epochs.drop_channels(['EXG1', 'EXG2', 'EXG3', 'EXG4'])
-limo_epochs.interpolate_bads(reset_bads=True)
-print(limo_epochs.metadata.head())
+###############################################################################
+# create a list with participants data
+limo_epochs = list()
+for subject in list(range(2, 6)):
+    limo_epochs.append(limo.load_data(subject=subject))
+
+# indices for loop
+epochs_ind = list(range(0, len(limo_epochs)))
+for ind in epochs_ind:
+    limo_epochs[ind].drop_channels(['EXG1', 'EXG2', 'EXG3', 'EXG4'])
+    limo_epochs[ind].interpolate_bads(reset_bads=True)
+
+# check metadata
+print(limo_epochs[0].metadata.head())
 
 # create factor for phase-variable
 name = "phase-coherence"
-df = limo_epochs.metadata
-df[name] = pd.cut(df[name], 11, labels=False) / 10
-colors = {str(val): val for val in df[name].unique()}
-limo_epochs.metadata = df.assign(Intercept=1)  # Add an intercept for later
-evokeds = {val: limo_epochs[limo_epochs.metadata[name] == float(val)].average() for val in colors}
+factor = 'factor-' + name
+for ind in epochs_ind:
+    df = limo_epochs[ind].metadata
+    df[factor] = pd.cut(df[name], 11, labels=False) / 10
+
+################################################################################
+# --- compute and plot grand averages for phase-coherence factor
+# create dict of colors for plot
+colors = {str(val): val for val in limo_epochs[0].metadata[factor].unique()}
+
+# evokeds per subject
+evokeds = list()
+for ind in epochs_ind:
+    subject_evo = {val: limo_epochs[ind][limo_epochs[ind].metadata[factor] == float(val)].average() for val in colors}  # noqa
+    evokeds.append(subject_evo)
+
+# evokeds per level of phase-coherence
+factor_evokeds = list()
+for val in colors:
+    factor_evo = {val: [evokeds[ind][val] for ind in epochs_ind]}
+    factor_evokeds.append(factor_evo)
+
+# dict for average
+grand_averages = list()
+for val in colors:
+    mne.grand_average(grand_averages[val])
+
+# compute grand averages
+grand_averages = {val: mne.grand_average(factor_evokeds[i][val]) for i, val in enumerate(colors)}  # noqa
 
 # pick channel to plot
-pick = limo_epochs['Face/A'].ch_names.index('B11')
+pick = limo_epochs[0]['Face/A'].ch_names.index('B11')
 
 # plot activity at electrode 'B11'
 fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-plot_compare_evokeds(evokeds,  axes=ax,
+plot_compare_evokeds(grand_averages,  axes=ax,
                      colors=colors, split_legend=True, picks=pick,
                      truncate_yaxis='max_ticks',
                      cmap=(name + " Percentile", "magma"))
 plt.show()
 
-# create design
-design = limo_epochs.metadata.copy()
+###############################################################################
+# --- create design for linear regression [WIP]
+design = limo_epochs[0].metadata.copy()
 design = design.assign(intercept=1)  # add intercept
 design['face a - face b'] = np.where(design['face'] == 'A', 1, -1)
 names = ['intercept', 'face a - face b', 'phase-coherence']
