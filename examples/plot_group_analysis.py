@@ -56,22 +56,28 @@ for val in colors:
 grand_averages = {val: mne.grand_average(factor_evokeds[i][val]) for i, val in enumerate(colors)}  # noqa
 
 # pick channel to plot
-pick = limo_epochs[subject].ch_names.index('B11')
-
-# plot activity at electrode 'B11'
-fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-plot_compare_evokeds(grand_averages,  axes=ax,
-                     colors=colors, split_legend=True, picks=pick,
-                     truncate_yaxis='max_ticks',
-                     cmap=(name + " Percentile", "magma"))
+electrodes = ['B8', 'A19', 'C22']
+# initialize figure
+fig, axs = plt.subplots(len(electrodes), 1, figsize=(10, 15))
+for electrode in list(range(len(electrodes))):
+    plot_compare_evokeds(grand_averages,  axes=axs[electrode],
+                         ylim=dict(eeg=[-12.5, 12.5]),
+                         colors=colors, split_legend=True,
+                         picks=electrodes[electrode],
+                         truncate_yaxis='max_ticks',
+                         cmap=(name + " Percentile", "magma"))
 plt.show()
 
 ###############################################################################
 # --- create design for linear regression [WIP]
-design = limo_epochs[0].metadata.copy()
+design = limo_epochs['2'].metadata.copy()
 design = design.assign(intercept=1)  # add intercept
 design['face a - face b'] = np.where(design['face'] == 'A', 1, -1)
 names = ['intercept', 'face a - face b', 'phase-coherence']
+
+data = limo_epochs['2'].get_data()
+n_samples = len(data)
+n_features = np.product(data.shape[1:])
 
 # fit linear model
 reg = linear_regression(limo_epochs, design[names], names=names)
