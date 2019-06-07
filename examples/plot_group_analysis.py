@@ -56,14 +56,30 @@ for val in colors:
 grand_averages = {val: mne.grand_average(factor_evokeds[i][val]) for i, val in enumerate(colors)}  # noqa
 
 # pick channel to plot
-electrodes = ['B8', 'A19', 'C22']
+electrodes = ['A19', 'C22', 'B8']
 # initialize figure
 fig, axs = plt.subplots(len(electrodes), 1, figsize=(10, 15))
 for electrode in list(range(len(electrodes))):
-    plot_compare_evokeds(grand_averages,  axes=axs[electrode],
+    plot_compare_evokeds(grand_averages,
+                         axes=axs[electrode],
                          ylim=dict(eeg=[-12.5, 12.5]),
-                         colors=colors, split_legend=True,
+                         colors=colors,
+                         split_legend=True,
                          picks=electrodes[electrode],
+                         truncate_yaxis='max_ticks',
+                         cmap=(name + " Percentile", "magma"))
+plt.show()
+
+# plot individual erps
+fig, axs = plt.subplots(17, 1, figsize=(5, 20))
+for ind in list(range(0, len(evokeds))):
+    plot_compare_evokeds(evokeds[ind],
+                         axes=axs[ind],
+                         title='subject %s' % (subjects[ind]),
+                         ylim=dict(eeg=[-15, 15]),
+                         colors=colors,
+                         split_legend=True,
+                         picks=electrodes[2],
                          truncate_yaxis='max_ticks',
                          cmap=(name + " Percentile", "magma"))
 plt.show()
@@ -75,6 +91,7 @@ design = design.assign(intercept=1)  # add intercept
 design['face a - face b'] = np.where(design['face'] == 'A', 1, -1)
 names = ['intercept', 'face a - face b', 'phase-coherence']
 
+# ** WIP **
 data = limo_epochs['2'].get_data()
 n_samples = len(data)
 n_features = np.product(data.shape[1:])
