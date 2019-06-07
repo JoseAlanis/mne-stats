@@ -8,69 +8,76 @@ from mne.viz import plot_compare_evokeds
 from mne.stats import linear_regression
 
 ###############################################################################
-# create a list with participants data
-limo_epochs = list()
-for subject in list(range(2, 6)):
-    limo_epochs.append(limo.load_data(subject=subject))
+# list with subjects ids that should be imported
+subjects = list(range(2, 19))
+# create a dictionary containing participants data for easy slicing
+limo_epochs = {str(subject): limo.load_data(subject=subject) for subject in subjects}  # noqa
 
-# indices for loop
-epochs_ind = list(range(0, len(limo_epochs)))
-for ind in epochs_ind:
-    limo_epochs[ind].drop_channels(['EXG1', 'EXG2', 'EXG3', 'EXG4'])
-    limo_epochs[ind].interpolate_bads(reset_bads=True)
+# get key from subjects dict for easy slicing
+subjects = list(limo_epochs.keys())
 
+###############################################################################
+# drop EOGs and interpolate missing channels
+for subject in subjects:
+    limo_epochs[subject].drop_channels(['EXG1', 'EXG2', 'EXG3', 'EXG4'])
+    limo_epochs[subject].interpolate_bads(reset_bads=True)
+
+###############################################################################
 # check metadata
-print(limo_epochs[0].metadata.head())
+print(limo_epochs[subjects[0]].metadata.head())
 
 # create factor for phase-variable
 name = "phase-coherence"
 factor = 'factor-' + name
-for ind in epochs_ind:
-    df = limo_epochs[ind].metadata
+for subject in subjects:
+    df = limo_epochs[subject].metadata
     df[factor] = pd.cut(df[name], 11, labels=False) / 10
+    # overwrite metadata
+    limo_epochs[subject].metadata = df
 
 ################################################################################
 # --- compute and plot grand averages for phase-coherence factor
 # create dict of colors for plot
-colors = {str(val): val for val in limo_epochs[0].metadata[factor].unique()}
+colors = {str(val): val for val in sorted(df[factor].unique())}
 
-# evokeds per subject
+# evoked responses per subject
 evokeds = list()
-for ind in epochs_ind:
-    subject_evo = {val: limo_epochs[ind][limo_epochs[ind].metadata[factor] == float(val)].average() for val in colors}  # noqa
+for subject in subjects:
+    subject_evo = {val: limo_epochs[subject][limo_epochs[subject].metadata[factor] == float(val)].average() for val in colors}  # noqa
     evokeds.append(subject_evo)
 
-# evokeds per level of phase-coherence
+# evoked responses per level of phase-coherence
 factor_evokeds = list()
 for val in colors:
-    factor_evo = {val: [evokeds[ind][val] for ind in epochs_ind]}
+    factor_evo = {val: [evokeds[ind][val] for ind in list(range(len(evokeds)))]}  # noqa
     factor_evokeds.append(factor_evo)
-
-# dict for average
-grand_averages = list()
-for val in colors:
-    mne.grand_average(grand_averages[val])
 
 # compute grand averages
 grand_averages = {val: mne.grand_average(factor_evokeds[i][val]) for i, val in enumerate(colors)}  # noqa
 
 # pick channel to plot
-pick = limo_epochs[0]['Face/A'].ch_names.index('B11')
-
-# plot activity at electrode 'B11'
-fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-plot_compare_evokeds(grand_averages,  axes=ax,
-                     colors=colors, split_legend=True, picks=pick,
-                     truncate_yaxis='max_ticks',
-                     cmap=(name + " Percentile", "magma"))
+electrodes = ['B8', 'A19', 'C22']
+# initialize figure
+fig, axs = plt.subplots(len(electrodes), 1, figsize=(10, 15))
+for electrode in list(range(len(electrodes))):
+    plot_compare_evokeds(grand_averages,  axes=axs[electrode],
+                         ylim=dict(eeg=[-12.5, 12.5]),
+                         colors=colors, split_legend=True,
+                         picks=electrodes[electrode],
+                         truncate_yaxis='max_ticks',
+                         cmap=(name + " Percentile", "magma"))
 plt.show()
 
 ###############################################################################
 # --- create design for linear regression [WIP]
-design = limo_epochs[0].metadata.copy()
+design = limo_epochs['2'].metadata.copy()
 design = design.assign(intercept=1)  # add intercept
 design['face a - face b'] = np.where(design['face'] == 'A', 1, -1)
 names = ['intercept', 'face a - face b', 'phase-coherence']
+
+data = limo_epochs['2'].get_data()
+n_samples = len(data)
+n_features = np.product(data.shape[1:])
 
 # fit linear model
 reg = linear_regression(limo_epochs, design[names], names=names)
