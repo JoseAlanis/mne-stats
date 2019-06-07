@@ -1,11 +1,10 @@
-import numpy as np
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
 import mne
 from mne.datasets import limo
 from mne.viz import plot_compare_evokeds
-from mne.stats import linear_regression
 
 ###############################################################################
 # list with subjects ids that should be imported
@@ -83,31 +82,3 @@ for ind in list(range(0, len(evokeds))):
                          truncate_yaxis='max_ticks',
                          cmap=(name + " Percentile", "magma"))
 plt.show()
-
-###############################################################################
-# --- create design for linear regression [WIP]
-design = limo_epochs['2'].metadata.copy()
-design = design.assign(intercept=1)  # add intercept
-design['face a - face b'] = np.where(design['face'] == 'A', 1, -1)
-names = ['intercept', 'face a - face b', 'phase-coherence']
-
-# ** WIP **
-data = limo_epochs['2'].get_data()
-n_samples = len(data)
-n_features = np.product(data.shape[1:])
-
-# fit linear model
-reg = linear_regression(limo_epochs, design[names], names=names)
-
-ts_args = dict(xlim=(-.25, 0.5))
-# Visualise effect of phase-coherence.
-reg['phase-coherence'].beta.plot_joint(ts_args=ts_args,
-                                       title='Effect of phase-coherence',
-                                       times=[.23])
-# intercept + beta of phase coherence
-prediction = mne.combine_evoked([reg['phase-coherence'][0],
-                                 reg['intercept'][0]],
-                                weights='equal')
-
-# plot difference between predicted values
-prediction.plot_joint(times=[.15], title='Predicted values - phase coherence')
