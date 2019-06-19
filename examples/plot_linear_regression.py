@@ -50,44 +50,51 @@ design = limo_epochs['2'].metadata.copy().assign(intercept=1)
 # effect code contrast for categorical variable (i.e., condition a vs. b)
 design['face a - face b'] = np.where(design['face'] == 'A', 1, -1)
 # create design matrix with named predictors
-features = ['intercept', 'face a - face b', 'phase-coherence']
-design = design[features]
+predictors = ['intercept', 'face a - face b', 'phase-coherence']
+design = design[predictors]
 
 ###############################################################################
 # --- run linear regression analysis using scikit-learn ---
 
-# design matrix
-design_matrix = design.copy()
-# name of predictors
-names = features.copy()
-
 # data to be analysed
 data = limo_epochs['2'].get_data(picks_eeg)
-# place holder for results
-out = EvokedArray(np.zeros(data.shape[1:]), epochs_info, tmin)
+# number of channels and number of time points in each epoch
+# we'll this this information later to bring the results of the
+# the linear regression algorithm into an eeg-like format
+# (i.e., channels x times points)
+n_channels = len(picks_eeg)
+n_times = len(limo_epochs['2'].times)
 
-# vectorised (channel) data for linear regression
+# vectorize (channel) data for linear regression
 Y = Vectorizer().fit_transform(data)
 
-# fit linear model with sklearn
-# use fit intercept=false because b0 already in design matrix
+# --- fit linear model with sklearn ---
+# here, we already have an intercept column in the design matrix,
+# thus we'll call LinearRegression with fit_intercept=False
 linear_model = LinearRegression(fit_intercept=False)
-fit = linear_model.fit(design_matrix, Y)
+linear_model.fit(design, Y)
 
-# extract coefficients (i.e., betas) for estimator
-betas = get_coef(fit, 'coef_').T
+# next, we'll extract the resulting coefficients (i.e., betas)
+# from the linear model estimator.
+betas = get_coef(linear_model, 'coef_')
 
-# store coefficients for each feature in a dictionary
-beta = dict()
-for coef, feature in zip(betas, features):
-    beta[feature] = coef.reshape(data.shape[1:])
+# notice that the resulting matrix of coefficients has a shape of
+# number of observations in the vertorized channel data (i.e, these represent
+# teh data points want to predict) by number of predictors.
+print(betas.shape)
 
-# loop through predictors and save results in evoked object
-lm_betas = {}
-for feature in features:
-    out_ = out.copy()
-    out_.data[:] = beta[feature]
-    lm_betas[feature] = out_
+# thus, we can loop through the columns (i.e., the predictors) of the
+# coefficient matrix and extract coefficients for each predictor and project
+# them back to a channels x time points space.
+lm_betas = dict()
+for ind, predictor in enumerate(predictors):
+    # extract coefficients
+    beta = betas[:, ind]
+    # back projection to channels x time points
+    beta = beta.reshape((n_channels, n_times))
+    # create evoked object containing the back projected coefficients
+    # for each predictor
+    lm_betas[predictor] = EvokedArray(beta, epochs_info, tmin)
 
 ###############################################################################
 # --- plot results of linear regression ---
@@ -101,7 +108,7 @@ lm_betas['phase-coherence'].plot_joint(ts_args=ts_args,
 
 ###############################################################################
 # replicate analysis using mne.stats.linear_regression
-reg = linear_regression(limo_epochs['2'], design, names=features)
+reg = linear_regression(limo_epochs['2'], design, names=predictors)
 
 # visualise effect of phase-coherence for mne.stats method.
 reg['phase-coherence'].beta.plot_joint(ts_args=ts_args,
