@@ -20,7 +20,7 @@ from mne.io.pick import pick_types
 
 ###############################################################################
 # list with subjects ids that should be imported
-subjects = list(range(2, 3))
+subjects = [2]
 # create a dictionary containing participants data
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
 
