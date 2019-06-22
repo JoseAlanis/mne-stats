@@ -91,21 +91,15 @@ np.random.seed(random_state)
 
 # number of random samples
 boot = 2000
-# shape of the resulting data (number of random samples x shape of Y)
-boot_shape = (boot, n_epochs, n_channels * n_times)
 
-# create sets of random samples
-resamples = [list(np.random.choice(range(n_epochs), n_epochs))
-             for i in range(boot)]
-
-# compute estimator for each of random samples
-resampled_data = [Y[resamples[i], :].mean(axis=0) for i in range(boot)]
-
-# sort estimates
-sorted_samples = np.sort(np.asarray(resampled_data), axis=0)
+# bootstrap estimator
+resampled_data = []
+for i in range(boot):
+    resamples = np.random.choice(range(n_epochs), n_epochs)
+    resampled_data.append(Y[resamples, :].mean(axis=0))
 
 # compute low and high percentile
-lower, upper = np.quantile(sorted_samples, [.025, .975], axis=0)
+lower, upper = np.quantile(resampled_data, [.025, .975], axis=0)
 
 # create evoked objects for percentile
 # lower bound
@@ -127,4 +121,4 @@ ax = plot_compare_evokeds(face_a_erp, pick, ylim=dict(eeg=[-3, 5]),
 ax.axes[0].fill_between(limo_epochs['2']["Face/A"].times,
                         upper.data[pick]*1e6,
                         lower.data[pick]*1e6, alpha=0.25)
-fig.savefig('/Users/josealanis/Desktop/face_a_erp_ci.png')
+plt.plot()
