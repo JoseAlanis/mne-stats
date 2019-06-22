@@ -53,7 +53,7 @@ evoked_info = create_info(ch_names=ch_names, sfreq=sfreq, ch_types=ch_types,
 # save epochs information (needed for creating a homologous
 # epochs object containing linear regression result)
 epochs_info = limo_epochs['2'].copy().drop_channels(exclude).info
-tmin = limo_epochs['2'].tmin.copy()
+tmin = limo_epochs['2'].tmin
 
 ###############################################################################
 # use epochs metadata to create design matrix for linear regression analyses
