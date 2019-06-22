@@ -104,10 +104,8 @@ lower, upper = np.quantile(resampled_data, [.025, .975], axis=0)
 # create evoked objects for percentile
 # lower bound
 lower = lower.reshape((n_channels, n_times))
-lower = EvokedArray(lower, info=evoked_info, tmin=tmin)
 # upper bound
 upper = upper.reshape((n_channels, n_times))
-upper = EvokedArray(upper, info=evoked_info, tmin=tmin)
 
 # erp for condition
 face_a_erp = limo_epochs['2']["Face/A"].average()
@@ -119,6 +117,6 @@ fig, ax = plt.subplots(figsize=(10, 7), sharex=True, sharey=True)
 ax = plot_compare_evokeds(face_a_erp, pick, ylim=dict(eeg=[-3, 5]),
                           colors=['b'], axes=ax)
 ax.axes[0].fill_between(limo_epochs['2']["Face/A"].times,
-                        upper.data[pick]*1e6,
-                        lower.data[pick]*1e6, alpha=0.25)
+                        upper[pick]*1e6,
+                        lower[pick]*1e6, alpha=0.25)
 plt.plot()
