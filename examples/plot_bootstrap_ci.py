@@ -1,7 +1,7 @@
 """
-================================================================
-Plot bootstrapped beta coefficients for a linear model estimator
-================================================================
+=======================================================
+Plot bootstrapped confidence interval for condition ERP
+=======================================================
 
 """
 
@@ -13,11 +13,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from mne import create_info
-from mne.viz import plot_compare_evokeds, plot_evoked_topo
+from mne.viz import plot_compare_evokeds
 from mne.channels import read_montage
 from mne.decoding import Vectorizer
 from mne.datasets import limo
-from mne.evoked import EvokedArray
 from mne.io.pick import pick_types
 
 ###############################################################################
@@ -113,7 +112,7 @@ face_a_erp = limo_epochs['2']["Face/A"].average()
 # electrode to plot
 pick = face_a_erp.ch_names.index('B29')
 
-fig, ax = plt.subplots(figsize=(10, 7), sharex=True, sharey=True)
+fig, ax = plt.subplots(figsize=(10, 7))
 ax = plot_compare_evokeds(face_a_erp, pick, ylim=dict(eeg=[-3, 5]),
                           colors=['b'], axes=ax)
 ax.axes[0].fill_between(limo_epochs['2']["Face/A"].times,
