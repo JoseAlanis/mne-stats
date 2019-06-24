@@ -12,7 +12,7 @@ Plot bootstrapped beta coefficients for a linear model estimator
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 
 from mne.viz import plot_compare_evokeds
 from mne.decoding import Vectorizer, get_coef
@@ -80,12 +80,19 @@ np.random.seed(random_state)
 # number of random samples
 boot = 2000
 
+# choose which estimator to use (either "ridge" or "ols"
+estimator = 'ridge'
+
 # run bootstrap for regression coefficients
 boot_betas = []
 for i in range(boot):
     resamples = np.random.choice(range(n_epochs), n_epochs)
-    # set up and fit model to bootstrap samples
-    linear_model = LinearRegression(fit_intercept=False)
+    # set up model: ridge or ols
+    if estimator == 'ridge':
+        linear_model = Ridge(fit_intercept=False, alpha=0)
+    elif estimator == 'ols':
+        linear_model = LinearRegression(fit_intercept=False)
+    # fit model to bootstrap samples
     linear_model.fit(X=design.iloc[resamples], y=Y[resamples, :])
     # extract coefficients
     boot_betas.append(get_coef(linear_model, 'coef_'))
@@ -94,8 +101,12 @@ for i in range(boot):
 lower, upper = np.quantile(boot_betas, [.025, .975], axis=0)
 
 ###############################################################################
-# fit linear regression
-linear_model = LinearRegression(fit_intercept=False)
+# set up model: ridge or ols
+if estimator == 'ridge':
+    linear_model = Ridge(fit_intercept=False, alpha=0)
+elif estimator == 'ols':
+    linear_model = LinearRegression(fit_intercept=False)
+# fit model
 linear_model.fit(design, Y)
 
 # extract the coefficients for linear model estimator
