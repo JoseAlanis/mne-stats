@@ -12,7 +12,7 @@ Plot bootstrapped beta coefficients for a linear model estimator
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.linear_model import LinearRegression
 
 from mne.viz import plot_compare_evokeds
 from mne.decoding import Vectorizer, get_coef
@@ -66,7 +66,7 @@ n_epochs = data.shape[0]
 # we'll use this information later to bring the results of the
 # the linear regression algorithm into an eeg-like format
 # (i.e., channels x times points)
-n_channels = len(picks_eeg)
+n_channels = picks_eeg.shape[0]
 n_times = len(limo_epochs['2'].times)
 
 # vectorize (channel) data for linear regression
@@ -75,37 +75,28 @@ Y = Vectorizer().fit_transform(data)
 # -- initialize bootstrap procedure --
 # set random state for replication
 random_state = 42
-np.random.seed(random_state)
+random = np.random.RandomState(random_state)
 
 # number of random samples
 boot = 2000
 
-# choose which estimator to use (either "ridge" or "ols"
-estimator = 'ridge'
-
 # run bootstrap for regression coefficients
 boot_betas = []
 for i in range(boot):
-    resamples = np.random.choice(range(n_epochs), n_epochs)
-    # set up model: ridge or ols
-    if estimator == 'ridge':
-        linear_model = Ridge(fit_intercept=False, alpha=0)
-    elif estimator == 'ols':
-        linear_model = LinearRegression(fit_intercept=False)
-    # fit model to bootstrap samples
-    linear_model.fit(X=design.iloc[resamples], y=Y[resamples, :])
+    resamples = random.choice(range(n_epochs), n_epochs, replace=True)
+    # set up model and fit model
+    model = LinearRegression(fit_intercept=False).fit(X=design.iloc[resamples],
+                                                      y=Y[resamples, :])
     # extract coefficients
-    boot_betas.append(get_coef(linear_model, 'coef_'))
+    boot_betas.append(get_coef(model, 'coef_'))
+    del model
 
 # compute low and high percentiles
 lower, upper = np.quantile(boot_betas, [.025, .975], axis=0)
 
 ###############################################################################
 # set up model: ridge or ols
-if estimator == 'ridge':
-    linear_model = Ridge(fit_intercept=False, alpha=0)
-elif estimator == 'ols':
-    linear_model = LinearRegression(fit_intercept=False)
+linear_model = LinearRegression(fit_intercept=False)
 # fit model
 linear_model.fit(design, Y)
 
@@ -117,14 +108,11 @@ lm_betas = dict()
 ci = dict(lower_bound=dict(), upper_bound=dict())
 # loop through predictors
 for ind, predictor in enumerate(predictors):
-    # extract coefficients for predictor in question
-    beta = betas[:, ind]
-    lower_bound = lower[:, ind]
-    upper_bound = upper[:, ind]
-    # back projection to channels x time points
-    beta = beta.reshape((n_channels, n_times))
-    lower_bound = lower_bound.reshape((n_channels, n_times))
-    upper_bound = upper_bound.reshape((n_channels, n_times))
+    # extract coefficients and CI for predictor in question
+    # and project back to channels x time points
+    beta = betas[:, ind].reshape((n_channels, n_times))
+    lower_bound = lower[:, ind].reshape((n_channels, n_times))
+    upper_bound = upper[:, ind].reshape((n_channels, n_times))
     # create evoked object containing the back projected coefficients
     # for each predictor
     lm_betas[predictor] = EvokedArray(beta, epochs_info, tmin)
