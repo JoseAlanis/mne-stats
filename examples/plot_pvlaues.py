@@ -67,7 +67,7 @@ n_epochs = data.shape[0]
 # we'll use this information later to bring the results of the
 # the linear regression algorithm into an eeg-like format
 # (i.e., channels x times points)
-n_channels = len(picks_eeg)
+n_channels = picks_eeg.shape[0]
 n_times = len(limo_epochs['2'].times)
 
 # number of trials and number of predictors
@@ -92,7 +92,7 @@ predictions = linear_model.predict(design)
 # compute sum of squared residuals and mean squared error
 residuals = linear_model.predict(design) - Y
 # sum of squared residuals
-ssr =  np.sum(residuals ** 2, axis=0)
+ssr = np.sum(residuals ** 2, axis=0)
 # mean squared error
 sqrt_mse = np.sqrt(ssr / dfs)
 
@@ -110,7 +110,7 @@ error_terms = \
 
 ###############################################################################
 # define dictionaries for results
-lm_betas, stderrs, t_vals, p_vals, p_vals_evoked = (dict() for _ in range(5))
+lm_betas, stderrs, t_vals, p_vals, s_vals = (dict() for _ in range(5))
 
 # define point asymptotic to zero to use as zero
 tiny = np.finfo(np.float64).tiny
@@ -142,7 +142,8 @@ for ind, predictor in enumerate(predictors):
     stderrs[predictor] = EvokedArray(stderr, epochs_info, tmin)
     t_vals[predictor] = EvokedArray(t_val, epochs_info, tmin)
     p_vals[predictor] = p_val
-    p_vals_evoked[predictor] = EvokedArray(p_val*1e-6, epochs_info, tmin)
+    # transform p-values to Shannon information values (i.e., surprise values)
+    s_vals[predictor] = EvokedArray(-np.log2(p_val)*1e-6, epochs_info, tmin)
 
 
 ###############################################################################
@@ -180,15 +181,15 @@ fig = t_vals['phase-coherence'].plot_image(time_unit='s',
 fig.axes[1].set_title('T-value')
 
 ###############################################################################
-# plot p-values as "erp"
+# plot surprise-values as "erp"
 # only show electrode `B8`
 pick = limo_epochs['2'].info['ch_names'].index('B8')
-fig, ax = plt.subplots(figsize=(10, 7))
-ax = plot_compare_evokeds(p_vals_evoked[predictor],
+fig, ax = plt.subplots(figsize=(7, 4))
+ax = plot_compare_evokeds(s_vals[predictor],
                           picks=pick,
-                          ylim=dict(eeg=[tiny, 1.]),
-                          axes=ax)
-# use a logarithmic scaling
-ax.axes[0].set_yscale('log')
-ax.axes[0].axhline(y=1, color='k')
+                          axes=ax,
+                          show_sensors='upper left')
+plt.rcParams.update({'mathtext.default':  'regular'})
+ax.axes[0].set_ylabel('$S_{value}$ (-$log_2$($P_{value}$)')
+ax.axes[0].yaxis.set_label_coords(-0.1, 0.5)
 plt.plot()
