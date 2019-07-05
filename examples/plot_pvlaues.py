@@ -90,7 +90,7 @@ betas = get_coef(linear_model, 'coef_')
 predictions = linear_model.predict(design)
 
 # compute sum of squared residuals and mean squared error
-residuals = linear_model.predict(design) - Y
+residuals = (Y - predictions)
 # sum of squared residuals
 ssr = np.sum(residuals ** 2, axis=0)
 # mean squared error
