@@ -1,9 +1,9 @@
-.. autoreject documentation master file, created by
-   sphinx-quickstart on Mon May 23 16:22:52 2016.
+.. MNE-Stats documentation master file, updated by
+   jose c. garcia alanis on Fri Jul 05 09:04:55 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-LIMOpy
-==========
+MNE-Stats
+=========
 
-Here we look at the LIMO dataset using MNE-Python.
+Here we carry out linear regression analyses using the LIMO dataset and MNE-Python.
