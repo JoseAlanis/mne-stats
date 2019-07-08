@@ -125,10 +125,8 @@ for ind, predictor in enumerate(predictors):
 
     # compute t values
     t_val = beta / stderr
-    # compute cumulative empirical distribution for t-values
-    cdf = stats.t.cdf(np.abs(t_val), dfs)
-    # and compute p-values
-    p_val = 2. * (1. - cdf)
+    # and p-values
+    p_val = 2 * stats.t.sf(np.abs(t_val), dfs)
 
     # project results back to channels x time points space
     beta = beta.reshape((n_channels, n_times))
