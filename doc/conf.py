@@ -57,7 +57,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'MNE-Stats'
+project = u'MNE-LIMO'
 copyright = u'2019, José C. García Alanis'
 author = u'José C. García Alanis'
 
@@ -127,14 +127,15 @@ html_theme = 'bootstrap'
 html_theme_options = {
     'navbar_sidebarrel': False,
     'navbar_links': [
-        ("Examples", "limo_examples/index"),
-        ("Explanation", "explanation"),
-        ("FAQ", "faq"),
-        ("API", "api"),
         ("What's new", "whats_new"),
+        ("Single subject analysis", "limo_examples/single_subject/index"),
+        ("Group level analysis", "limo_examples/group_level/index"),
+        # ("Explanation", "explanation"),
+        # ("FAQ", "faq"),
+        # ("API", "api"),
         ("GitHub", "https://github.com/JoseAlanis/mne-stats", True)
     ],
-    'bootswatch_theme': "cosmo"
+    'bootswatch_theme': "flatly"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -222,7 +223,7 @@ html_static_path = ['_static']
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'mne-stats-doc'
+htmlhelp_basename = 'mne-limo-doc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -244,7 +245,7 @@ htmlhelp_basename = 'mne-stats-doc'
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'MNE-Stats.tex', u'MNE-Stats Documentation',
+    (master_doc, 'MNE-LIMO.tex', u'MNE-LIMO Documentation',
      u'Jose C. Garcia Alanis', 'manual'),
 ]
 
@@ -288,8 +289,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'MNE-Stats', u'MNE-Stats Documentation',
-     author, 'MNE-Stats', 'Linear Regression Analysis',
+    (master_doc, 'MNE-LIMO', u'MNE-LIMO Documentation',
+     author, 'MNE-LIMO', 'Linear regression analysis with MNE-Python',
      'Miscellaneous'),
 ]
 
@@ -313,8 +314,8 @@ intersphinx_mapping = {'python': ('https://docs.python.org/', None),
                        }
 
 sphinx_gallery_conf = {
-    'examples_dirs': '../examples',
-    'gallery_dirs': 'limo_examples',
+    'examples_dirs': ['../examples/single_subject', '../examples/group_level'],
+    'gallery_dirs': ['limo_examples/single_subject', 'limo_examples/group_level'],
     'backreferences_dir': 'generated',
     'reference_url': {
         'mne': 'http://mne-tools.github.io/stable/',
