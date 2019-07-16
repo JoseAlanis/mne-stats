@@ -8,7 +8,7 @@ from mne.utils import _check_pandas_installed
 
 
 def plot_design_matrix(inst, predictors, scale=True, contrast='effect',
-                       cmap='binary_r', ):
+                       cmap='binary_r'):
     """
     Parameters
     ----------

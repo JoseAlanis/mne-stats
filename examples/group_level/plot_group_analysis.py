@@ -1,3 +1,13 @@
+"""
+=======================
+Plot Grand-Average ERPs
+=======================
+
+"""
+
+# Authors: Jose C. Garcia Alanis <alanis.jcg@gmail.com>
+#
+# License: BSD (3-clause)
 
 import pandas as pd
 import matplotlib.pyplot as plt
