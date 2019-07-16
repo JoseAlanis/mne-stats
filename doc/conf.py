@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# autoreject documentation build configuration file, created by
-# sphinx-quickstart on Mon May 23 16:22:52 2016.
+# MNE-LIMO documentation build configuration file, updated by
+# jose c. garcia alanis on Tue Jul 16 16:48:43 2019.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -275,7 +275,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'MNE-Stats', u'MNE-Stats Documentation',
+    (master_doc, 'MNE-LIMO', u'MNE-LIMO Documentation',
      [author], 1)
 ]
 
