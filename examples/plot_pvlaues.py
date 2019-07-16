@@ -96,17 +96,10 @@ ssr = np.sum(residuals ** 2, axis=0)
 # mean squared error
 sqrt_mse = np.sqrt(ssr / dfs)
 
-# raw error terms from each predictor in design matrix:
-# here, we take the inverse of a design) matrix projections
+# raw error terms for each predictor in the design matrix:
+# here, we take the inverse of the design matrix's projections
 # (i.e., A^T*A)^-1 and extract the square root of the diagonal values.
-error_terms = \
-    np.sqrt(
-        np.diag(
-            np.linalg.pinv(
-                np.dot(design.T, design)
-            )
-        )
-    )
+error_terms = np.sqrt(np.diag(np.linalg.pinv(np.dot(design.T, design))))
 
 ###############################################################################
 # define dictionaries for results
@@ -141,7 +134,7 @@ for ind, predictor in enumerate(predictors):
     t_vals[predictor] = EvokedArray(t_val, epochs_info, tmin)
     p_vals[predictor] = p_val
     # transform p-values to Shannon information values (i.e., surprise values)
-    s_vals[predictor] = EvokedArray(-np.log2(p_val)*1e-6, epochs_info, tmin)
+    s_vals[predictor] = EvokedArray(-np.log2(p_val) * 1e-6, epochs_info, tmin)
 
 
 ###############################################################################
