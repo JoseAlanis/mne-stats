@@ -1,7 +1,7 @@
 """
-================================================================
-Plot bootstrapped beta coefficients for a linear model estimator
-================================================================
+=================================
+Plot R-squared for a linear model
+=================================
 """
 
 # Authors: Jose C. Garcia Alanis <alanis.jcg@gmail.com>
