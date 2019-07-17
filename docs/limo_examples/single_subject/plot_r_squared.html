@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Plot R-squared for a linear model &#8212; MNE-LIMO 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-LIMO</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../whats_new.html">What's new</a></li>
+                <li><a href="index.html">Single subject analysis</a></li>
+                <li><a href="../group_level/index.html">Group level analysis</a></li>
+                <li><a href="https://github.com/JoseAlanis/mne-stats">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Plot R-squared for a linear model</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/limo_examples/single_subject/plot_r_squared.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-limo-examples-single-subject-plot-r-squared-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="plot-r-squared-for-a-linear-model">
+<span id="sphx-glr-limo-examples-single-subject-plot-r-squared-py"></span><h1>Plot R-squared for a linear model<a class="headerlink" href="#plot-r-squared-for-a-linear-model" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Jose C. Garcia Alanis &lt;alanis.jcg@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">r2_score</span>
+
+<span class="kn">from</span> <span class="nn">mne.decoding</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="View documentation for mne.decoding.Vectorizer"><span class="n">Vectorizer</span></a><span class="p">,</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="k">import</span> <span class="n">limo</span>
+<span class="kn">from</span> <span class="nn">mne.evoked</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a>
+<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="k">import</span> <span class="n">pick_types</span>
+</pre></div>
+</div>
+<p>list with subjects ids that should be imported</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="c1"># create a dictionary containing participants data</span>
+<span class="n">limo_epochs</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">subj</span><span class="p">):</span> <span class="n">limo</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subj</span><span class="p">)</span> <span class="k">for</span> <span class="n">subj</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">}</span>
+
+<span class="c1"># get key from subjects dict for easy slicing</span>
+<span class="c1"># subjects = list(limo_epochs.keys())</span>
+
+<span class="c1"># interpolate missing channels</span>
+<span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">limo_epochs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="n">subject</span><span class="o">.</span><span class="n">interpolate_bads</span><span class="p">(</span><span class="n">reset_bads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># pick channels that should be included in the analysis</span>
+<span class="n">picks_eeg</span> <span class="o">=</span> <span class="n">pick_types</span><span class="p">(</span><span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># channels to be excluded</span>
+<span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EXG1&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG2&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG3&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG4&#39;</span><span class="p">]</span>
+
+<span class="c1"># save epochs information (needed for creating a homologous</span>
+<span class="c1"># epochs object containing linear regression result)</span>
+<span class="n">epochs_info</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span><span class="o">.</span><span class="n">info</span>
+<span class="n">tmin</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tmin</span>
+</pre></div>
+</div>
+<p>use epochs metadata to create design matrix for linear regression analyses</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># add intercept</span>
+<span class="n">design</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">intercept</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># effect code contrast for categorical variable (i.e., condition a vs. b)</span>
+<span class="n">design</span><span class="p">[</span><span class="s1">&#39;face a - face b&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><span class="n">design</span><span class="p">[</span><span class="s1">&#39;face&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># create design matrix with named predictors</span>
+<span class="n">predictors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;intercept&#39;</span><span class="p">,</span> <span class="s1">&#39;face a - face b&#39;</span><span class="p">,</span> <span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span>
+<span class="n">design</span> <span class="o">=</span> <span class="n">design</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>— run linear regression analysis using scikit-learn —
+data to be analysed</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">picks_eeg</span><span class="p">)</span>
+
+<span class="c1"># number of epochs in data set</span>
+<span class="n">n_epochs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># number of channels and number of time points in each epoch</span>
+<span class="c1"># we&#39;ll use this information later to bring the results of the</span>
+<span class="c1"># the linear regression algorithm into an eeg-like format</span>
+<span class="c1"># (i.e., channels x times points)</span>
+<span class="n">n_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks_eeg</span><span class="p">)</span>
+<span class="n">n_times</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># vectorize (channel) data for linear regression</span>
+<span class="n">Y</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="View documentation for mne.decoding.Vectorizer"><span class="n">Vectorizer</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># set up model and fit linear model</span>
+<span class="n">linear_model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">linear_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+<span class="c1"># extract the coefficients for linear model estimator</span>
+<span class="n">betas</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a><span class="p">(</span><span class="n">linear_model</span><span class="p">,</span> <span class="s1">&#39;coef_&#39;</span><span class="p">)</span>
+
+<span class="c1"># calculate coefficient of determination (r-squared)</span>
+<span class="n">r_squared</span> <span class="o">=</span> <span class="n">r2_score</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">design</span><span class="p">),</span> <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;raw_values&#39;</span><span class="p">)</span>
+<span class="c1"># project r-squared back to channels by times space</span>
+<span class="n">r_squared</span> <span class="o">=</span> <span class="n">r_squared</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+<span class="n">r_squared</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a><span class="p">(</span><span class="n">r_squared</span><span class="p">,</span> <span class="n">epochs_info</span><span class="p">,</span> <span class="n">tmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>— plot r-squared —
+only show -250 to 500 ms</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ts_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="o">-.</span><span class="mi">25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+               <span class="n">unit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">ylim</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]))</span>
+<span class="n">topomap_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">scalings</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                    <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="c1"># create plot</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">r_squared</span><span class="o">.</span><span class="n">plot_joint</span><span class="p">(</span><span class="n">ts_args</span><span class="o">=</span><span class="n">ts_args</span><span class="p">,</span>
+                           <span class="n">topomap_args</span><span class="o">=</span><span class="n">topomap_args</span><span class="p">,</span>
+                           <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Proportion of variance explained by &#39;</span>
+                                 <span class="s1">&#39;predictors&#39;</span><span class="p">,</span>
+                           <span class="n">times</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">13</span><span class="p">,</span> <span class="o">.</span><span class="mi">23</span><span class="p">])</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;R-squared&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-limo-examples-single-subject-plot-r-squared-py">
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/1aa3784e40ccdd9efc257ed51e3b5644/plot_r_squared.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_r_squared.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/89db0f1afb088f17c966410277694931/plot_r_squared.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_r_squared.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, José C. García Alanis.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
