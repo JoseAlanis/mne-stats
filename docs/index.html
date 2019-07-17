@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>MNE-LIMO &#8212; MNE-LIMO 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          MNE-LIMO</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="whats_new.html">What's new</a></li>
+                <li><a href="limo_examples/single_subject/index.html">Single subject analysis</a></li>
+                <li><a href="limo_examples/group_level/index.html">Group level analysis</a></li>
+                <li><a href="https://github.com/JoseAlanis/mne-stats">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">MNE-LIMO</a></li>
+<li><a class="reference internal" href="#analyzing-m-eeg-data-with-mne-limo">Analyzing (M)EEG data with MNE-LIMO</a></li>
+<li><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/index.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="mne-limo">
+<h1>MNE-LIMO<a class="headerlink" href="#mne-limo" title="Permalink to this headline">¶</a></h1>
+<p>This site is dedicated to the statistical analysis of electro-encephalography (EEG) and magneto-encephalography (MEG) data using <a class="reference external" href="https://martinos.org/mne/stable/index.html">MNE-Python</a>.</p>
+<p>Particular emphasis is put on the statistical analysis of these data using <strong>LI</strong>near regression <strong>MO</strong>dels (i.e., LIMO).</p>
+<p>For this purpose, we have started to replicate and extend the analysis and tools integrated in <a class="reference external" href="https://github.com/LIMO-EEG-Toolbox/limo_eeg">LIMO MEEG</a>, a MATLAB toolbox originally designed to interface with EEGLAB.</p>
+</div>
+<div class="section" id="analyzing-m-eeg-data-with-mne-limo">
+<h1>Analyzing (M)EEG data with MNE-LIMO<a class="headerlink" href="#analyzing-m-eeg-data-with-mne-limo" title="Permalink to this headline">¶</a></h1>
+<p>Currently, we are implementing a series of examples to fit linear models on single subject data and derive inferential measures to evaluate the estimated effects.
+Please visit the <a class="reference internal" href="limo_examples/single_subject/index.html#sphx-glr-limo-examples-single-subject"><span class="std std-ref">single subject analysis gallery</span></a> for more information on how to fit linear models to single subjects’ data.</p>
+<p>In addition, we have started to develop methods to translate and extend these single subject analysis tools to allow group-level analyses, i.e., the estimation linear regression effects over a series of subjects.
+Please visit the <a class="reference internal" href="limo_examples/group_level/index.html#sphx-glr-limo-examples-group-level"><span class="std std-ref">group level analysis gallery</span></a> for more information on how to carry out linear regression on data from multiple subjects.</p>
+</div>
+<div class="section" id="acknowledgements">
+<h1>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h1>
+<p>This project is currently supported by a <a class="reference external" href="https://summerofcode.withgoogle.com/projects/#5715889406607360">2019 Google Summer of Code project</a> grant issued to José C. García Alanis.</p>
+<p>Special acknowledgements go to Denis A. Engemann, Jona Sassenhagen, and the MNE-Community for their support, guidance, and inputs for the project.</p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, José C. García Alanis.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
