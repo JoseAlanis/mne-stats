@@ -2,3 +2,5 @@
 
 # PyCharm
 .idea/**
+docs/_build/
+limo_examples/
