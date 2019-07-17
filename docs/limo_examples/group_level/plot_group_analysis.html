@@ -131,10 +131,135 @@
 <span class="n">subjects</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">limo_epochs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>1052 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1072 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1050 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1118 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1108 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1060 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1030 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1059 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1038 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1029 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+943 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1108 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+998 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1076 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1061 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1098 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1103 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+</pre></div>
+</div>
 <p>drop EOGs and interpolate missing channels</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">:</span>
     <span class="n">limo_epochs</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="s1">&#39;EXG1&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG2&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG3&#39;</span><span class="p">,</span> <span class="s1">&#39;EXG4&#39;</span><span class="p">])</span>
     <span class="n">limo_epochs</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">interpolate_bads</span><span class="p">(</span><span class="n">reset_bads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 121 sensor positions
+Interpolating 7 sensors
+Computing interpolation matrix from 119 sensor positions
+Interpolating 9 sensors
+Computing interpolation matrix from 122 sensor positions
+Interpolating 6 sensors
+Computing interpolation matrix from 118 sensor positions
+Interpolating 10 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 121 sensor positions
+Interpolating 7 sensors
+Computing interpolation matrix from 116 sensor positions
+Interpolating 12 sensors
+/Users/josealanis/Documents/github/mne-stats/examples/group_level/plot_group_analysis.py:32: RuntimeWarning: No bad channels to interpolate. Doing nothing...
+  limo_epochs[subject].interpolate_bads(reset_bads=True)
+Computing interpolation matrix from 115 sensor positions
+Interpolating 13 sensors
+Computing interpolation matrix from 122 sensor positions
+Interpolating 6 sensors
+Computing interpolation matrix from 114 sensor positions
+Interpolating 14 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 125 sensor positions
+Interpolating 3 sensors
+Computing interpolation matrix from 126 sensor positions
+Interpolating 2 sensors
+Computing interpolation matrix from 122 sensor positions
+Interpolating 6 sensors
 </pre></div>
 </div>
 <p>check metadata</p>
@@ -148,6 +273,32 @@
     <span class="n">df</span><span class="p">[</span><span class="n">factor</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="mi">11</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span>
     <span class="c1"># overwrite metadata</span>
     <span class="n">limo_epochs</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">df</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  face  phase-coherence
+0    A        -1.456885
+1    A        -1.456885
+2    A        -0.108914
+3    A         1.624191
+4    A         0.276221
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
+Replacing existing metadata with 3 columns
 </pre></div>
 </div>
 <p>— compute and plot grand averages for phase-coherence factor
@@ -199,7 +350,60 @@ create dict of colors for plot</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<ul class="sphx-glr-horizontal">
+<li><img alt="../../_images/sphx_glr_plot_group_analysis_001.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_plot_group_analysis_001.png" />
+</li>
+<li><img alt="../../_images/sphx_glr_plot_group_analysis_002.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_plot_group_analysis_002.png" />
+</li>
+</ul>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Identifying common channels ...
+all channels are corresponding, nothing to do.
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+/Users/josealanis/anaconda3/lib/python3.7/site-packages/matplotlib/figure.py:445: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+  % get_backend())
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+Float colors detected, mapping to percentiles ...
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  59.306 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-limo-examples-group-level-plot-group-analysis-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/801e74dcb3f4f3d4d0bccacc4da667cd/plot_group_analysis.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_group_analysis.py</span></code></a></p>

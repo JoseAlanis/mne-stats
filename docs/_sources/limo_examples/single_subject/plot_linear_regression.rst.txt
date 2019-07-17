@@ -29,6 +29,11 @@ Plot beta coefficients from linear model estimation with sklearn
     from mne.io.pick import pick_types
 
 
+
+
+
+
+
 list with subjects ids that should be imported
 
 
@@ -57,6 +62,25 @@ list with subjects ids that should be imported
 
 
 
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    1052 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    Computing interpolation matrix from 117 sensor positions
+    Interpolating 11 sensors
+
+
+
 use epochs metadata to create design matrix for linear regression analyses
 
 
@@ -70,6 +94,11 @@ use epochs metadata to create design matrix for linear regression analyses
     # create design matrix with named predictors
     predictors = ['intercept', 'face a - face b', 'phase-coherence']
     design = design[predictors]
+
+
+
+
+
 
 
 --- run linear regression analysis using scikit-learn ---
@@ -119,6 +148,19 @@ use epochs metadata to create design matrix for linear regression analyses
         lm_betas[predictor] = EvokedArray(beta, epochs_info, tmin)
 
 
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    (25728, 3)
+
+
+
 --- plot results of linear regression ---
 only show -250 to 500 ms
 
@@ -131,6 +173,14 @@ only show -250 to 500 ms
     lm_betas['phase-coherence'].plot_joint(ts_args=ts_args,
                                            title='Phase-coherence (sklearn betas)',
                                            times=[.23])
+
+
+
+
+.. image:: /limo_examples/single_subject/images/sphx_glr_plot_linear_regression_001.png
+    :class: sphx-glr-single-img
+
+
 
 
 replicate analysis using mne.stats.linear_regression
@@ -146,9 +196,28 @@ replicate analysis using mne.stats.linear_regression
                                            times=[.23])
 
 
+
+.. image:: /limo_examples/single_subject/images/sphx_glr_plot_linear_regression_002.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /Users/josealanis/Documents/github/mne-stats/examples/single_subject/plot_linear_regression.py:111: RuntimeWarning: Fitting linear model to non-data or bad channels. Check picking
+      reg = linear_regression(limo_epochs['2'], design, names=predictors)
+    Fitting linear model to epochs, (26532 targets, 3 regressors)
+    Done
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.000 seconds)
+   **Total running time of the script:** ( 0 minutes  4.771 seconds)
 
 
 .. _sphx_glr_download_limo_examples_single_subject_plot_linear_regression.py:

@@ -27,6 +27,11 @@ Plot Grand-Average ERPs
     from mne.viz import plot_compare_evokeds
 
 
+
+
+
+
+
 list with subjects ids that should be imported
 
 
@@ -40,6 +45,103 @@ list with subjects ids that should be imported
     subjects = list(limo_epochs.keys())
 
 
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    1052 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1072 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1050 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1118 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1108 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1060 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1030 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1059 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1038 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1029 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    943 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1108 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    998 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1076 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1061 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1098 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+    1103 matching events found
+    No baseline correction applied
+    Adding metadata with 2 columns
+    0 projection items activated
+    0 bad epochs dropped
+
+
+
 drop EOGs and interpolate missing channels
 
 
@@ -48,6 +150,52 @@ drop EOGs and interpolate missing channels
     for subject in subjects:
         limo_epochs[subject].drop_channels(['EXG1', 'EXG2', 'EXG3', 'EXG4'])
         limo_epochs[subject].interpolate_bads(reset_bads=True)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Computing interpolation matrix from 117 sensor positions
+    Interpolating 11 sensors
+    Computing interpolation matrix from 121 sensor positions
+    Interpolating 7 sensors
+    Computing interpolation matrix from 119 sensor positions
+    Interpolating 9 sensors
+    Computing interpolation matrix from 122 sensor positions
+    Interpolating 6 sensors
+    Computing interpolation matrix from 118 sensor positions
+    Interpolating 10 sensors
+    Computing interpolation matrix from 117 sensor positions
+    Interpolating 11 sensors
+    Computing interpolation matrix from 117 sensor positions
+    Interpolating 11 sensors
+    Computing interpolation matrix from 121 sensor positions
+    Interpolating 7 sensors
+    Computing interpolation matrix from 116 sensor positions
+    Interpolating 12 sensors
+    /Users/josealanis/Documents/github/mne-stats/examples/group_level/plot_group_analysis.py:32: RuntimeWarning: No bad channels to interpolate. Doing nothing...
+      limo_epochs[subject].interpolate_bads(reset_bads=True)
+    Computing interpolation matrix from 115 sensor positions
+    Interpolating 13 sensors
+    Computing interpolation matrix from 122 sensor positions
+    Interpolating 6 sensors
+    Computing interpolation matrix from 114 sensor positions
+    Interpolating 14 sensors
+    Computing interpolation matrix from 117 sensor positions
+    Interpolating 11 sensors
+    Computing interpolation matrix from 125 sensor positions
+    Interpolating 3 sensors
+    Computing interpolation matrix from 126 sensor positions
+    Interpolating 2 sensors
+    Computing interpolation matrix from 122 sensor positions
+    Interpolating 6 sensors
+
 
 
 check metadata
@@ -65,6 +213,41 @@ check metadata
         df[factor] = pd.cut(df[name], 11, labels=False) / 10
         # overwrite metadata
         limo_epochs[subject].metadata = df
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+      face  phase-coherence
+    0    A        -1.456885
+    1    A        -1.456885
+    2    A        -0.108914
+    3    A         1.624191
+    4    A         0.276221
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+    Replacing existing metadata with 3 columns
+
 
 
 --- compute and plot grand averages for phase-coherence factor
@@ -120,9 +303,78 @@ create dict of colors for plot
     plt.show()
 
 
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /limo_examples/group_level/images/sphx_glr_plot_group_analysis_001.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /limo_examples/group_level/images/sphx_glr_plot_group_analysis_002.png
+            :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Identifying common channels ...
+    all channels are corresponding, nothing to do.
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    /Users/josealanis/anaconda3/lib/python3.7/site-packages/matplotlib/figure.py:445: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+      % get_backend())
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+    Float colors detected, mapping to percentiles ...
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.000 seconds)
+   **Total running time of the script:** ( 0 minutes  59.306 seconds)
 
 
 .. _sphx_glr_download_limo_examples_group_level_plot_group_analysis.py:

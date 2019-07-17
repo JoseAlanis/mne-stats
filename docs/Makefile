@@ -41,12 +41,17 @@ help:
 	@echo "  install    to make the html and push it online"
 
 .PHONY: clean
-
 clean:
 	rm -rf $(BUILDDIR)/*
 	rm -rf limo_examples/
 	rm -rf generated/*
 	rm -rf modules/*
+
+.PHONY: html
+html:
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	@echo
+	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
 html-noplot:
 	$(SPHINXBUILD) -D plot_gallery=0 -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html

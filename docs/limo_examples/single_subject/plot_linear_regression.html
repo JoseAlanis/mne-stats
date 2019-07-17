@@ -147,6 +147,16 @@
 <span class="n">tmin</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tmin</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>1052 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+</pre></div>
+</div>
 <p>use epochs metadata to create design matrix for linear regression analyses</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># add intercept</span>
 <span class="n">design</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">intercept</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -199,6 +209,10 @@
     <span class="n">lm_betas</span><span class="p">[</span><span class="n">predictor</span><span class="p">]</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">epochs_info</span><span class="p">,</span> <span class="n">tmin</span><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(25728, 3)
+</pre></div>
+</div>
 <p>— plot results of linear regression —
 only show -250 to 500 ms</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ts_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="o">-.</span><span class="mi">25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
@@ -209,6 +223,7 @@ only show -250 to 500 ms</p>
                                        <span class="n">times</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">23</span><span class="p">])</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_plot_linear_regression_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_linear_regression_001.png" />
 <p>replicate analysis using mne.stats.linear_regression</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reg</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.stats.linear_regression.html#mne.stats.linear_regression" title="View documentation for mne.stats.linear_regression"><span class="n">linear_regression</span></a><span class="p">(</span><span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">],</span> <span class="n">design</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">predictors</span><span class="p">)</span>
 
@@ -218,7 +233,15 @@ only show -250 to 500 ms</p>
                                        <span class="n">times</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">23</span><span class="p">])</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<img alt="../../_images/sphx_glr_plot_linear_regression_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_linear_regression_002.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/josealanis/Documents/github/mne-stats/examples/single_subject/plot_linear_regression.py:111: RuntimeWarning: Fitting linear model to non-data or bad channels. Check picking
+  reg = linear_regression(limo_epochs[&#39;2&#39;], design, names=predictors)
+Fitting linear model to epochs, (26532 targets, 3 regressors)
+Done
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.771 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-limo-examples-single-subject-plot-linear-regression-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ba74b2aa0a904e2a97dc6cb436dd6505/plot_linear_regression.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_linear_regression.py</span></code></a></p>

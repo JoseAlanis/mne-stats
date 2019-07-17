@@ -148,6 +148,16 @@
 <span class="n">tmin</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tmin</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>1052 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+</pre></div>
+</div>
 <p>use epochs metadata to create design matrix for linear regression analyses</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># add intercept</span>
 <span class="n">design</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">intercept</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -205,7 +215,8 @@ only show -250 to 500 ms</p>
 <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;R-squared&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<img alt="../../_images/sphx_glr_plot_r_squared_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_r_squared_001.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.542 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-limo-examples-single-subject-plot-r-squared-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/1aa3784e40ccdd9efc257ed51e3b5644/plot_r_squared.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_r_squared.py</span></code></a></p>
