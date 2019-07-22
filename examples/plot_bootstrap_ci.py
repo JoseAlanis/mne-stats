@@ -1,7 +1,7 @@
 """
-=======================================================
-Plot bootstrapped confidence interval for condition ERP
-=======================================================
+==========================================================
+Plot bootstrapped confidence interval for linear model fit
+==========================================================
 
 """
 
@@ -12,9 +12,12 @@ Plot bootstrapped confidence interval for condition ERP
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sklearn.linear_model import LinearRegression
+
 from mne.viz import plot_compare_evokeds
-from mne.decoding import Vectorizer
+from mne.decoding import Vectorizer, get_coef
 from mne.datasets import limo
+from mne.evoked import EvokedArray
 
 ###############################################################################
 # list with subjects ids that should be imported
@@ -22,32 +25,51 @@ subjects = [2]
 # create a dictionary containing participants data
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
 
-# get key from subjects dict for easy slicing
-# subjects = list(limo_epochs.keys())
-
 # interpolate missing channels
 for subject in limo_epochs.values():
     subject.interpolate_bads(reset_bads=True)
 
+# epochs to use for analysis
+epochs = limo_epochs['2']
+
+# only keep eeg channels
+epochs = epochs.pick_types(eeg=True)
+
+# save epochs information (needed for creating a homologous
+# epochs object containing linear regression result)
+epochs_info = epochs.info
+tmin = epochs.tmin
+
+###############################################################################
+# use epochs metadata to create design matrix for linear regression analyses
+
+# add intercept
+design = epochs.metadata.copy().assign(intercept=1)
+# effect code contrast for categorical variable (i.e., condition a vs. b)
+design['face a - face b'] = np.where(design['face'] == 'A', 1, -1)
+# create design matrix with named predictors
+predictors = ['intercept', 'face a - face b', 'phase-coherence']
+design = design[predictors]
+
 ###############################################################################
 # data to be analysed
-face_a = limo_epochs['2']['Face/A'].get_data()
+data = epochs.get_data()
 
-# number of trials per condition
-n_epochs = face_a.shape[0]
+# number of epochs in data set
+n_epochs = data.shape[0]
 
 # number of channels and number of time points in each epoch
-# we'll this this information later to bring the results of the
+# we'll use this information later to bring the results of the
 # the linear regression algorithm into an eeg-like format
 # (i.e., channels x times points)
-n_channels = len(limo_epochs['2'].info['ch_names'])
-n_times = len(limo_epochs['2'].times)
+n_channels = data.shape[1]
+n_times = len(epochs.times)
 
 # vectorize (channel) data for linear regression
-Y = Vectorizer().fit_transform(face_a)
+Y = Vectorizer().fit_transform(data)
 
 ###############################################################################
-# run bootstrap for centrality estimator
+# run bootstrap for regression coefficients
 
 # set random state for replication
 random_state = 42
@@ -56,42 +78,71 @@ random = np.random.RandomState(random_state)
 # number of random samples
 boot = 2000
 
-# initialize bootstrap
-resampled_data = []
+# run bootstrap for regression coefficients
+boot_betas = []
 for i in range(boot):
-    # pick random samples with replacement from data
     resamples = random.choice(range(n_epochs), n_epochs, replace=True)
-    # compute centrality estimator on re-sampled data
-    resampled_data.append(Y[resamples, :].mean(axis=0))
+    # set up model and fit model
+    model = LinearRegression(fit_intercept=False)
+    model.fit(X=design.iloc[resamples], y=Y[resamples, :])
+    # extract coefficients
+    boot_betas.append(get_coef(model, 'coef_'))
+    del model
 
 ###############################################################################
-# compute confidence interval
-
-# compute low and high percentile
-lower, upper = np.quantile(resampled_data, [.025, .975], axis=0)
-
-# create evoked objects for percentile
-# lower bound
-lower = lower.reshape((n_channels, n_times))
-# upper bound
-upper = upper.reshape((n_channels, n_times))
+# compute lower and upper boundaries of confidence interval
+lower, upper = np.quantile(boot_betas, [.025, .975], axis=0)
 
 ###############################################################################
-# plot results
+# create results object
 
-# erp for condition
-face_a_erp = limo_epochs['2']["Face/A"].average()
+# set up linear model
+linear_model = LinearRegression(fit_intercept=False)
+# fit model
+linear_model.fit(design, Y)
 
+# extract the coefficients for linear model estimator
+betas = get_coef(linear_model, 'coef_')
+
+# project coefficients back to a channels x time points space.
+lm_betas = dict()
+ci = dict(lower_bound=dict(), upper_bound=dict())
+# loop through predictors
+for ind, predictor in enumerate(predictors):
+    # extract coefficients and CI for predictor in question
+    # and project back to channels x time points
+    beta = betas[:, ind].reshape((n_channels, n_times))
+    lower_bound = lower[:, ind].reshape((n_channels, n_times))
+    upper_bound = upper[:, ind].reshape((n_channels, n_times))
+    # create evoked object containing the back projected coefficients
+    # for each predictor
+    lm_betas[predictor] = EvokedArray(beta, epochs_info, tmin)
+    # dictionary containing upper and lower confidence boundaries
+    ci['lower_bound'][predictor] = lower_bound
+    ci['upper_bound'][predictor] = upper_bound
+
+###############################################################################
+# plot results of linear regression
+
+# only show -250 to 500 ms
+ts_args = dict(xlim=(-.25, 0.5))
+
+# predictor to plot
+predictor = 'phase-coherence'
 # electrode to plot
-pick = face_a_erp.ch_names.index('B8')
+pick = epochs.info['ch_names'].index('B8')
 
-# create figure
+# visualise effect of phase-coherence for sklearn estimation method.
+lm_betas[predictor].plot_joint(ts_args=ts_args,
+                               title='Phase-coherence (sklearn betas)',
+                               times=[.23])
+
+# plot effect of phase-coherence on electrode B8 with 95% confidence interval
 fig, ax = plt.subplots(figsize=(10, 7))
-ax = plot_compare_evokeds(face_a_erp, pick,
-                          ylim=dict(eeg=[-17.5, 10]),
-                          show_sensors='upper right',
-                          axes=ax)
-ax.axes[0].fill_between(limo_epochs['2']["Face/A"].times,
-                        upper[pick]*1e6,
-                        lower[pick]*1e6, alpha=0.25)
+ax = plot_compare_evokeds(lm_betas[predictor], pick,
+                          ylim=dict(eeg=[-11, 1]),
+                          colors=['b'], axes=ax)
+ax.axes[0].fill_between(epochs.times,
+                        ci['lower_bound'][predictor][pick]*1e6,
+                        ci['upper_bound'][predictor][pick]*1e6, alpha=0.25)
 plt.plot()
