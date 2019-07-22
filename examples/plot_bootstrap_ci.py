@@ -87,7 +87,7 @@ for i in range(boot):
     # set up model and fit model
     model = LinearRegression(fit_intercept=False)
     model.fit(X=design.iloc[resamples], y=Y[resamples, :])
-    # save coefficients for this particular sample bootstrap sample
+    # extract regression coefficients
     boot_betas[i, :, :] = get_coef(model, 'coef_')
     # delete the previously fitted model
     del model
