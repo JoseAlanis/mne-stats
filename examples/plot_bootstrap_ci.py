@@ -78,15 +78,18 @@ random = np.random.RandomState(random_state)
 # number of random samples
 boot = 2000
 
+# create empty array for saving the bootstrap samples
+boot_betas = np.zeros((boot, Y.shape[1], len(predictors)))
 # run bootstrap for regression coefficients
-boot_betas = []
 for i in range(boot):
+    # extract random epochs from data
     resamples = random.choice(range(n_epochs), n_epochs, replace=True)
     # set up model and fit model
     model = LinearRegression(fit_intercept=False)
     model.fit(X=design.iloc[resamples], y=Y[resamples, :])
-    # extract coefficients
-    boot_betas.append(get_coef(model, 'coef_'))
+    # save coefficients for this particular sample bootstrap sample
+    boot_betas[i, :, :] = get_coef(model, 'coef_')
+    # delete the previously fitted model
     del model
 
 ###############################################################################
