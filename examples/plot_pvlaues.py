@@ -72,7 +72,7 @@ n_epochs = data.shape[0]
 # the linear regression algorithm into an eeg-like format
 # (i.e., channels x times points)
 n_channels = data.shape[1]
-n_times = len(limo_epochs['2'].times)
+n_times = len(epochs.times)
 
 # number of trials and number of predictors
 n_trials, n_predictors = design.shape
