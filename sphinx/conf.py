@@ -10,15 +10,17 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
+# import os
+# import sys
 # sys.path.insert(0, os.path.abspath('../'))
 
 # import sphinx_gallery
 from sphinx_gallery.sorting import FileNameSortKey, ExplicitOrder
 
 import sphinx_bootstrap_theme
-from numpydoc import numpydoc, docscrape  # noqa
+# from numpydoc import docscrape
+
+# import mne
 
 # -- Project information -----------------------------------------------------
 
@@ -40,6 +42,7 @@ release = '0.0.1'
 extensions = [
     'sphinx.ext.autodoc',
      # 'sphinx.ext.autosummary',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.githubpages',
     'sphinx_gallery.gen_gallery',
 ]
@@ -127,7 +130,7 @@ htmlhelp_basename = 'mne-limo-doc'
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'mne-limo.tex', 'MNE-LIMO Documentation',
-     'Jose C. Garcia Alanis', 'manual'),
+     'Jose C. Garcia Alanis', 'manual')
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -191,6 +194,8 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'python': ('https://docs.python.org/', None),
+                       'numpy': ('https://www.numpy.org/devdocs', None),
+                       'sklearn': ('https://scikit-learn.org/stable', None),
                        'seaborn': ('https://seaborn.pydata.org/', None),
                        'mne': ('http://martinos.org/mne/stable/', None)
                        }
