@@ -1,7 +1,7 @@
 """
-========================
-Plot group-level effects
-========================
+===============================================
+Plot group-level effects of continuous variable
+===============================================
 
 """
 
@@ -18,7 +18,7 @@ from mne.stats.parametric import ttest_1samp_no_p
 from mne.datasets import limo
 from mne.decoding import Vectorizer, get_coef
 from mne.evoked import EvokedArray
-from mne import grand_average
+from mne import combine_evoked
 
 from mne.viz import plot_compare_evokeds
 
@@ -98,12 +98,6 @@ for iteration, subject in enumerate(limo_epochs.values()):
     # vectorize data across channels
     Y = Vectorizer().fit_transform(data)
 
-    # --- 3) Parameters for significance testing ---
-    # number of trials
-    n_trials = design.shape[0]
-    # degrees of freedom
-    dfs = float(n_trials - n_predictors)
-
     # --- 3) fit linear model with sklearn's LinearRegression ---
     # we already have an intercept column in the design matrix,
     # thus we'll call LinearRegression with fit_intercept=False
@@ -133,38 +127,6 @@ for iteration, subject in enumerate(limo_epochs.values()):
     # save results
     betas_evoked[str(subjects[iteration])] = lm_betas
 
-    # # --- 5) compute t-values ---
-    lm_t = dict()
-
-    # compute model predictions
-    predictions = linear_model.predict(design)
-
-    # compute sum of squared residuals and mean squared error
-    residuals = (Y - predictions)
-    # sum of squared residuals
-    ssr = np.sum(residuals ** 2, axis=0)
-    # mean squared error
-    sqrt_mse = np.sqrt(ssr / dfs)
-    # raw error terms:
-    # here, we take the inverse of the design matrix's projections
-    # (i.e., A^T*A)^-1 and extract the square root of the diagonal values.
-    error = np.sqrt(np.diag(np.linalg.pinv(np.dot(design.T, design))))
-    # only keep relevant predictor
-    error = error[pred_col]
-    # compute standard error
-    stderr = sqrt_mse * error
-
-    # compute t values
-    t_val = coefs[:, pred_col] / stderr
-    # back projection to channels x time points
-    t_val = t_val.reshape((n_channels, n_times))
-
-    # create evoked object containing the back projected coefficients
-    lm_t['phase-coherence'] = EvokedArray(t_val, epochs_info, tmin)
-
-    # save results
-    t_evokeds[str(subjects[iteration])] = lm_t
-
     # clean up
     del linear_model
 
@@ -176,8 +138,10 @@ subjects = [str(subj) for subj in subjects]
 
 # extract phase-coherence betas for each subject
 phase_coherence = [betas_evoked[subj]['phase-coherence'] for subj in subjects]
+
 # average phase-coherence betas
-ga_phase_coherence = grand_average(phase_coherence)
+weights = np.repeat(1 / len(phase_coherence), len(phase_coherence))
+ga_phase_coherence = combine_evoked(phase_coherence, weights)
 
 ###############################################################################
 # compute bootstrap confidence interval for phase-coherence betas and t-values
@@ -192,7 +156,10 @@ random = np.random.RandomState(random_state)
 # number of random samples
 boot = 2000
 
+# place holders for bootstrap samples
 boot_betas = np.zeros((boot, n_channels * n_times))
+boot_t = np.zeros((boot, n_channels * n_times))
+
 # run bootstrap for regression coefficients
 for i in range(boot):
     # extract random subjects from overall sample
@@ -202,19 +169,31 @@ for i in range(boot):
     # compute centrality estimator on re-sampled betas
     boot_betas[i, :] = betas[resampled_subjects, :].mean(axis=0)
 
-# compute low and high percentile
-lower, upper = np.quantile(boot_betas, [.025, .975], axis=0)
+    # compute t-test on resampled betas
+    boot_t[i, :] = ttest_1samp_no_p(betas[resampled_subjects, :])
 
+###############################################################################
+# compute low and high percentiles
+
+# for bootstrapped betas
+lower_b, upper_b = np.quantile(boot_betas, [.025, .975], axis=0)
 # reshape to channels * time-points space
-lower = lower.reshape((n_channels, n_times))
-upper = upper.reshape((n_channels, n_times))
+lower_b = lower_b.reshape((n_channels, n_times))
+upper_b = upper_b.reshape((n_channels, n_times))
+
+# for bootstrapped t-values
+lower_t, upper_t = np.quantile(boot_t, [.025, .975], axis=0)
+# reshape to channels * time-points space
+lower_t = lower_t.reshape((n_channels, n_times))
+upper_t = upper_t.reshape((n_channels, n_times))
 
 ###############################################################################
 # plot mean beta parameter for phase coherence and 95%
 # confidence interval for the electrode showing the strongest effect (i.e., C1)
 
 # index of C1 in array
-pick = ga_phase_coherence.ch_names.index('C1')
+electrode = 'C1'
+pick = ga_phase_coherence.ch_names.index(electrode)
 
 # create figure
 fig, ax = plt.subplots(figsize=(7, 4))
@@ -223,94 +202,71 @@ ax = plot_compare_evokeds(ga_phase_coherence,
                           picks=pick,
                           show_sensors='upper right',
                           axes=ax)
-ax.axes[0].fill_between(times,
-                        # tranform values to microvolt
-                        upper[pick] * 1e6,
-                        lower[pick] * 1e6,
-                        alpha=0.2)
+ax[0].axes[0].fill_between(times,
+                           # transform values to microvolt
+                           upper_b[pick] * 1e6,
+                           lower_b[pick] * 1e6,
+                           alpha=0.2)
 plt.plot()
 
 ###############################################################################
-# bootstrap one-sample t test
+# compute one sample t-test on phase coherence betas
 
-# set random state for replication
-random_state = 42
-random = np.random.RandomState(random_state)
-
-# number of random samples
-boot = 2000
-
-boot_t = np.zeros((boot, n_channels * n_times))
-
-# run bootstrap t-test
-for ind in range(boot):
-    # extract random subjects from overall sample
-    resampled_subjects = random.choice(subjects,
-                                       len(subjects),
-                                       replace=True)
-
-    # extract t-values for the ramdom sample of subjects
-    t_sample = np.zeros((len(limo_epochs.values()), n_channels, n_times))
-    for iteration, subj in enumerate(resampled_subjects):
-        # extract evoked data
-        t_sample[iteration, :, :] = t_evokeds[subj]['phase-coherence'].data
-
-    # vectorize channel data
-    t_sample = Vectorizer().fit_transform(t_sample)
-
-    # compute t-test for bootstrap sample
-    boot_t[ind, :] = ttest_1samp_no_p(t_sample)
-
-# compute low and high percentile for bootstrap t-test
-lower_t, upper_t = np.quantile(boot_t, [.025, .975], axis=0)
-
-###############################################################################
-# correct p-values for multiple testing and create a mask for non-significant
-
-# extract phase-coherence t-values for each subject
-t_phase_coherence = [t_evokeds[subj]['phase-coherence'] for subj in subjects]
-
-t_vals = np.zeros((len(limo_epochs.values()), n_channels, n_times))
-
-for iteration, subject in enumerate(t_phase_coherence):
-    # extract evoked data
-    t_vals[iteration, :, :] = subject.data
-
-# vectorize channel data
-t_vals = Vectorizer().fit_transform(t_vals)
-# compute one-sample t-test on phase-coherence t-values extracted from
-# each subjects linear regression results
-t_vals = ttest_1samp_no_p(t_vals)
-
-# compute p-values from bootstrap t-test
-#
-# [WIP]: average number of times the T-values obtained from original data
-#        are above or below lower_t / upper_t
-#
-# lower_t = lower_t.reshape((n_channels, n_times))
-# upper_t = upper_t.reshape((n_channels, n_times))
-
+# estimate t-values
+t_vals = ttest_1samp_no_p(betas)
 # back projection to channels x time points
 t_vals = t_vals.reshape((n_channels, n_times))
 
-# create evoked object containing the back projected coefficients
+# create evoked object containing the resulting t-values
 group_t = dict()
 group_t['phase-coherence'] = EvokedArray(t_vals, epochs_info, tmin)
 
-# electrode to plot (reverse order to be compatible whit LIMO paper)
+# electrodes to plot (reverse order to be compatible whit LIMO paper)
 picks = group_t['phase-coherence'].ch_names[::-1]
 # plot t-values, masking non-significant time points.
 fig = group_t['phase-coherence'].plot_image(time_unit='s',
                                             picks=picks,
                                             xlim=(-.1, None),
-                                            # mask=mask,
                                             unit=False,
                                             # keep values scale
                                             scalings=dict(eeg=1))
 fig.axes[1].set_title('T-value')
+fig.axes[0].set_title('Group-level effect of phase-coherence')
 
+###############################################################################
 # plot topo-map for n170 effect
+
 fig = group_t['phase-coherence'].plot_topomap(times=[.12, .16, .20],
                                               scalings=dict(eeg=1),
                                               sensors=False,
                                               outlines='skirt')
+
+###############################################################################
+# plot t-histograms for n170 effect showing CI bondaries
+
+# times to plot
+time_ind_120 = (times > .119) & (times < .122)
+time_ind_160 = (times > .159) & (times < .161)
+time_ind_200 = (times > .199) & (times < .201)
+
+# at ~ .120 seconds
+plt.hist(boot_t.reshape((boot_t.shape[0], n_channels, n_times))[:, pick, time_ind_120], bins=100)
+plt.axvline(x=lower_t[pick, time_ind_120], color='r')
+plt.axvline(x=upper_t[pick, time_ind_120], color='r')
+plt.title('electrode %s, time ~ .120 s' % electrode)
+
+###############################################################################
+
+# at ~ .150 seconds
+plt.hist(boot_t.reshape((boot_t.shape[0], n_channels, n_times))[:, pick, time_ind_160], bins=100)
+plt.axvline(x=lower_t[pick, time_ind_160], color='r')
+plt.axvline(x=upper_t[pick, time_ind_160], color='r')
+plt.title('electrode %s, time ~ .160 s' % electrode)
+
+###############################################################################
+
+# at ~ .200 seconds
+plt.hist(boot_t.reshape((boot_t.shape[0], n_channels, n_times))[:, pick, time_ind_200], bins=200)
+plt.axvline(x=lower_t[pick, time_ind_200], color='r')
+plt.axvline(x=upper_t[pick, time_ind_200], color='r')
+plt.title('electrode %s, time ~ .200 s' % electrode)
