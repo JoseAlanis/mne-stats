@@ -146,9 +146,6 @@ ga_phase_coherence = combine_evoked(phase_coherence, weights)
 ###############################################################################
 # compute bootstrap confidence interval for phase-coherence betas and t-values
 
-# column of betas array (i.e., predictor) to run bootstrap on
-pred_col = predictors.index('phase-coherence')
-
 # set random state for replication
 random_state = 42
 random = np.random.RandomState(random_state)
@@ -166,23 +163,34 @@ for i in range(boot):
     resampled_subjects = random.choice(range(betas.shape[0]),
                                        betas.shape[0],
                                        replace=True)
-    # compute centrality estimator on re-sampled betas
-    boot_betas[i, :] = betas[resampled_subjects, :].mean(axis=0)
+    # resampled betas
+    resampled_betas = betas[resampled_subjects, :]
 
-    # compute t-test on resampled betas
-    boot_t[i, :] = ttest_1samp_no_p(betas[resampled_subjects, :])
+    # compute standard error of bootstrap sample
+    se = resampled_betas.std(axis=0) / np.sqrt(resampled_betas.shape[0])
+
+    # center re-sampled betas around zero
+    for subj_ind in range(resampled_betas.shape[0]):
+        resampled_betas[subj_ind, :] = resampled_betas[subj_ind, :] - betas.mean(axis=0)
+
+    # compute t-values for bootstrap sample
+    boot_t[i, :] = resampled_betas.mean(axis=0) / se
 
 ###############################################################################
-# compute low and high percentiles
+# compute robust CI based on bootstrap-t technique
 
-# for bootstrapped betas
-lower_b, upper_b = np.quantile(boot_betas, [.025, .975], axis=0)
+# compute low and high percentiles for bootstrapped t-values
+lower_t, upper_t = np.quantile(boot_t, [.025, .975], axis=0)
+
+# compute group-level standard error based on subjects beta coefficients
+betas_se = betas.std(axis=0) / np.sqrt(betas.shape[0])
+lower_b = betas.mean(axis=0) - upper_t * betas_se
+upper_b = betas.mean(axis=0) - lower_t * betas_se
+
 # reshape to channels * time-points space
-lower_b = lower_b.reshape((n_channels, n_times))
+lower_b = lower_t.reshape((n_channels, n_times))
 upper_b = upper_b.reshape((n_channels, n_times))
 
-# for bootstrapped t-values
-lower_t, upper_t = np.quantile(boot_t, [.025, .975], axis=0)
 # reshape to channels * time-points space
 lower_t = lower_t.reshape((n_channels, n_times))
 upper_t = upper_t.reshape((n_channels, n_times))
@@ -245,7 +253,7 @@ fig = group_t['phase-coherence'].plot_topomap(times=[.12, .16, .20],
 # plot t-histograms for n170 effect showing CI bondaries
 
 # times to plot
-time_ind_120 = (times > .119) & (times < .122)
+time_ind_120 = (times > .119) & (times < .121)
 time_ind_160 = (times > .159) & (times < .161)
 time_ind_200 = (times > .199) & (times < .201)
 
