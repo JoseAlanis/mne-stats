@@ -171,7 +171,8 @@ for i in range(boot):
 
     # center re-sampled betas around zero
     for subj_ind in range(resampled_betas.shape[0]):
-        resampled_betas[subj_ind, :] = resampled_betas[subj_ind, :] - betas.mean(axis=0)
+        resampled_betas[subj_ind, :] = resampled_betas[subj_ind, :] - \
+                                       betas.mean(axis=0)
 
     # compute t-values for bootstrap sample
     boot_t[i, :] = resampled_betas.mean(axis=0) / se
@@ -227,6 +228,12 @@ t_vals = ttest_1samp_no_p(betas)
 # back projection to channels x time points
 t_vals = t_vals.reshape((n_channels, n_times))
 
+# create mask for "significant" t-values (i.e., above or below
+# boot-t quantiles
+t_pos = t_vals > upper_t
+t_neg = t_vals < lower_t
+sig_mask = t_pos | t_neg
+
 # create evoked object containing the resulting t-values
 group_t = dict()
 group_t['phase-coherence'] = EvokedArray(t_vals, epochs_info, tmin)
@@ -236,12 +243,14 @@ picks = group_t['phase-coherence'].ch_names[::-1]
 # plot t-values, masking non-significant time points.
 fig = group_t['phase-coherence'].plot_image(time_unit='s',
                                             picks=picks,
+                                            mask=sig_mask,
                                             xlim=(-.1, None),
                                             unit=False,
                                             # keep values scale
                                             scalings=dict(eeg=1))
 fig.axes[1].set_title('T-value')
 fig.axes[0].set_title('Group-level effect of phase-coherence')
+fig.set_size_inches(7, 4)
 
 ###############################################################################
 # plot topo-map for n170 effect
@@ -252,7 +261,7 @@ fig = group_t['phase-coherence'].plot_topomap(times=[.12, .16, .20],
                                               outlines='skirt')
 
 ###############################################################################
-# plot t-histograms for n170 effect showing CI bondaries
+# plot t-histograms for n170 effect showing CI boundaries
 
 # times to plot
 time_ind_120 = (times > .119) & (times < .121)
