@@ -1,7 +1,7 @@
 """
-===============================================
-Plot group-level effects of continuous variable
-===============================================
+==============================================
+Plot group-level effect of continuous variable
+==============================================
 
 """
 
@@ -141,7 +141,7 @@ phase_coherence = [betas_evoked[subj]['phase-coherence'] for subj in subjects]
 
 # average phase-coherence betas
 weights = np.repeat(1 / len(phase_coherence), len(phase_coherence))
-ga_phase_coherence = combine_evoked(phase_coherence, weights)
+ga_phase_coherence = combine_evoked(phase_coherence, weights=weights)
 
 ###############################################################################
 # compute bootstrap confidence interval for phase-coherence betas and t-values
@@ -184,11 +184,13 @@ lower_t, upper_t = np.quantile(boot_t, [.025, .975], axis=0)
 
 # compute group-level standard error based on subjects beta coefficients
 betas_se = betas.std(axis=0) / np.sqrt(betas.shape[0])
+# lower bound of CI
 lower_b = betas.mean(axis=0) - upper_t * betas_se
+# upper bound of CI
 upper_b = betas.mean(axis=0) - lower_t * betas_se
 
 # reshape to channels * time-points space
-lower_b = lower_t.reshape((n_channels, n_times))
+lower_b = lower_b.reshape((n_channels, n_times))
 upper_b = upper_b.reshape((n_channels, n_times))
 
 # reshape to channels * time-points space
@@ -258,7 +260,9 @@ time_ind_160 = (times > .159) & (times < .161)
 time_ind_200 = (times > .199) & (times < .201)
 
 # at ~ .120 seconds
-plt.hist(boot_t.reshape((boot_t.shape[0], n_channels, n_times))[:, pick, time_ind_120], bins=100)
+plt.hist(boot_t.reshape((boot_t.shape[0],
+                         n_channels,
+                         n_times))[:, pick, time_ind_120], bins=100)
 plt.axvline(x=lower_t[pick, time_ind_120], color='r')
 plt.axvline(x=upper_t[pick, time_ind_120], color='r')
 plt.title('electrode %s, time ~ .120 s' % electrode)
@@ -266,7 +270,9 @@ plt.title('electrode %s, time ~ .120 s' % electrode)
 ###############################################################################
 
 # at ~ .150 seconds
-plt.hist(boot_t.reshape((boot_t.shape[0], n_channels, n_times))[:, pick, time_ind_160], bins=100)
+plt.hist(boot_t.reshape((boot_t.shape[0],
+                         n_channels,
+                         n_times))[:, pick, time_ind_160], bins=100)
 plt.axvline(x=lower_t[pick, time_ind_160], color='r')
 plt.axvline(x=upper_t[pick, time_ind_160], color='r')
 plt.title('electrode %s, time ~ .160 s' % electrode)
@@ -274,7 +280,9 @@ plt.title('electrode %s, time ~ .160 s' % electrode)
 ###############################################################################
 
 # at ~ .200 seconds
-plt.hist(boot_t.reshape((boot_t.shape[0], n_channels, n_times))[:, pick, time_ind_200], bins=200)
+plt.hist(boot_t.reshape((boot_t.shape[0],
+                         n_channels,
+                         n_times))[:, pick, time_ind_200], bins=200)
 plt.axvline(x=lower_t[pick, time_ind_200], color='r')
 plt.axvline(x=upper_t[pick, time_ind_200], color='r')
 plt.title('electrode %s, time ~ .200 s' % electrode)
