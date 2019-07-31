@@ -24,7 +24,7 @@ from mne.viz import plot_compare_evokeds
 
 ###############################################################################
 # list with subjects ids that should be imported
-subjects = list(range(2, 19))
+subjects = list(range(1, 19))
 # create a dictionary containing participants data for easy slicing
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
 
@@ -121,8 +121,10 @@ for iteration, subject in enumerate(limo_epochs.values()):
 # get participants age
 subj_age = read_csv('./limo_dataset_age.tsv', sep='\t', header=0)
 
-# only keep subjects 2 - 18
-group_design = subj_age.iloc[1:]
+# # only keep subjects 2 - 18
+# group_design = subj_age.iloc[1:]
+
+group_design = subj_age
 # add intercept
 group_design = group_design.assign(intercept=1)
 # order columns of design matrix
@@ -211,4 +213,4 @@ group_betas = group_coefs[:, group_pred_col]
 # optimized electrode
 
 plt.plot(times, group_betas * 1e6)  # transform betas to microvolt
-plt.ylim(ymax=1, ymin=-1)
+plt.ylim(ymax=.1, ymin=-.1)
