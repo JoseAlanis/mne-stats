@@ -1,7 +1,7 @@
 """
-==============================================
-Plot group-level effect of continuous variable
-==============================================
+=========================================================
+Plot significance t-map for effect of continuous variable
+=========================================================
 
 """
 
@@ -12,9 +12,7 @@ Plot group-level effect of continuous variable
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-import matplotlib.pyplot as plt
-
-from mne.stats.parametric import ttest_1samp_no_p
+from mne.stats.cluster_level import _find_clusters,_pval_from_histogram
 from mne.datasets import limo
 from mne.decoding import Vectorizer, get_coef
 from mne.evoked import EvokedArray
@@ -24,7 +22,7 @@ from mne.viz import plot_compare_evokeds
 
 ###############################################################################
 # list with subjects ids that should be imported
-subjects = list(range(2, 19))
+subjects = list(range(1, 19))
 # create a dictionary containing participants data for easy slicing
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
 
@@ -156,6 +154,7 @@ boot = 2000
 # place holders for bootstrap samples
 boot_betas = np.zeros((boot, n_channels * n_times))
 boot_t = np.zeros((boot, n_channels * n_times))
+cluster_H0 = np.zeros(boot)
 
 # run bootstrap for regression coefficients
 for i in range(boot):
@@ -177,63 +176,47 @@ for i in range(boot):
     # compute t-values for bootstrap sample
     boot_t[i, :] = resampled_betas.mean(axis=0) / se
 
-###############################################################################
-# compute robust CI based on bootstrap-t technique
-
-# compute low and high percentiles for bootstrapped t-values
-lower_t, upper_t = np.quantile(boot_t, [.025, .975], axis=0)
-
-# compute group-level standard error based on subjects beta coefficients
-betas_se = betas.std(axis=0) / np.sqrt(betas.shape[0])
-# lower bound of CI
-lower_b = betas.mean(axis=0) - upper_t * betas_se
-# upper bound of CI
-upper_b = betas.mean(axis=0) - lower_t * betas_se
-
-# reshape to channels * time-points space
-lower_b = lower_b.reshape((n_channels, n_times))
-upper_b = upper_b.reshape((n_channels, n_times))
-
-# reshape to channels * time-points space
-lower_t = lower_t.reshape((n_channels, n_times))
-upper_t = upper_t.reshape((n_channels, n_times))
+    # compute clustering on squared t-values (i.e., f-values)
+    _, cluster_stats = _find_clusters(boot_t[i, :],
+                                      t_power=2,
+                                      threshold=dict(start=.1, step=.1),
+                                      tail=1)
+    # save max cluster mass. Combined, the max cluster mass values from
+    # computed on the basis of the bootstrap samples provide an approximation
+    # of the cluster mass distribution under H0
+    cluster_H0[i] = cluster_stats.max()
 
 ###############################################################################
-# plot mean beta parameter for phase coherence and 95%
-# confidence interval for the electrode showing the strongest effect (i.e., C1)
+# estimate t-test based on original phase coherence betas
 
-# index of C1 in array
-electrode = 'C1'
-pick = ga_phase_coherence.ch_names.index(electrode)
+# estimate t-values and f-values
+se = betas.std(axis=0) / np.sqrt(betas.shape[0])
+t_vals = betas.mean(axis=0) / se
+f_vals = t_vals ** 2
 
-# create figure
-fig, ax = plt.subplots(figsize=(7, 4))
-ax = plot_compare_evokeds(ga_phase_coherence,
-                          ylim=dict(eeg=[-1.5, 3.5]),
-                          picks=pick,
-                          show_sensors='upper right',
-                          axes=ax)
-ax[0].axes[0].fill_between(times,
-                           # transform values to microvolt
-                           upper_b[pick] * 1e6,
-                           lower_b[pick] * 1e6,
-                           alpha=0.2)
-plt.plot()
+# find clusters
+clusters, cluster_stats = _find_clusters(f_vals,
+                                         threshold=dict(start=.1, step=.1),
+                                         tail=1)
 
 ###############################################################################
-# compute one sample t-test on phase coherence betas
+# compute cluster p-values and get mask por plot
 
-# estimate t-values
-t_vals = ttest_1samp_no_p(betas)
+# here, we use the distribution of cluster mass bootstrap values
+cluster_pv = _pval_from_histogram(cluster_stats,
+                                  np.sort(cluster_H0),
+                                  tail=1)
+
+# mask p-values above alpha level
+sig_mask = cluster_pv < 0.05
+
+###############################################################################
 # back projection to channels x time points
 t_vals = t_vals.reshape((n_channels, n_times))
+f_vals = f_vals.reshape((n_channels, n_times))
+sig_mask = sig_mask.reshape((n_channels, n_times))
 
-# create mask for "significant" t-values (i.e., above or below
-# boot-t quantiles
-t_pos = t_vals > upper_t
-t_neg = t_vals < lower_t
-sig_mask = t_pos | t_neg
-
+###############################################################################
 # create evoked object containing the resulting t-values
 group_t = dict()
 group_t['phase-coherence'] = EvokedArray(t_vals, epochs_info, tmin)
@@ -251,47 +234,3 @@ fig = group_t['phase-coherence'].plot_image(time_unit='s',
 fig.axes[1].set_title('T-value')
 fig.axes[0].set_title('Group-level effect of phase-coherence')
 fig.set_size_inches(7, 4)
-
-###############################################################################
-# plot topo-map for n170 effect
-
-fig = group_t['phase-coherence'].plot_topomap(times=[.12, .16, .20],
-                                              scalings=dict(eeg=1),
-                                              sensors=False,
-                                              outlines='skirt')
-
-###############################################################################
-# plot t-histograms for n170 effect showing CI boundaries
-
-# times to plot
-time_ind_120 = (times > .119) & (times < .121)
-time_ind_160 = (times > .159) & (times < .161)
-time_ind_200 = (times > .199) & (times < .201)
-
-# at ~ .120 seconds
-plt.hist(boot_t.reshape((boot_t.shape[0],
-                         n_channels,
-                         n_times))[:, pick, time_ind_120], bins=100)
-plt.axvline(x=lower_t[pick, time_ind_120], color='r')
-plt.axvline(x=upper_t[pick, time_ind_120], color='r')
-plt.title('electrode %s, time ~ .120 s' % electrode)
-
-###############################################################################
-
-# at ~ .150 seconds
-plt.hist(boot_t.reshape((boot_t.shape[0],
-                         n_channels,
-                         n_times))[:, pick, time_ind_160], bins=100)
-plt.axvline(x=lower_t[pick, time_ind_160], color='r')
-plt.axvline(x=upper_t[pick, time_ind_160], color='r')
-plt.title('electrode %s, time ~ .160 s' % electrode)
-
-###############################################################################
-
-# at ~ .200 seconds
-plt.hist(boot_t.reshape((boot_t.shape[0],
-                         n_channels,
-                         n_times))[:, pick, time_ind_200], bins=200)
-plt.axvline(x=lower_t[pick, time_ind_200], color='r')
-plt.axvline(x=upper_t[pick, time_ind_200], color='r')
-plt.title('electrode %s, time ~ .200 s' % electrode)
