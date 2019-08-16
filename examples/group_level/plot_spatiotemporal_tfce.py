@@ -187,6 +187,11 @@ for i in range(boot):
     # transfrom to f-values
     f_vals = t_val ** 2
 
+    # transpose for clustering
+    f_vals = f_vals.reshape((n_channels, n_times))
+    f_vals = np.transpose(f_vals, (1, 0))
+    f_vals = f_vals.reshape((n_times * n_channels))
+
     # compute clustering on squared t-values (i.e., f-values)
     clusters, cluster_stats = _find_clusters(f_vals,
                                              threshold=threshold,
@@ -202,6 +207,8 @@ for i in range(boot):
 
     # save max f-value
     f_H0[i] = f_vals.max()
+
+    print('find clusters for bootstrap sample %i' % i)
 
 ###############################################################################
 # estimate t-test based on original phase coherence betas
@@ -223,21 +230,19 @@ clusters, cluster_stats = _find_clusters(f_vals,
                                          tail=1)
 
 ###############################################################################
-# compute cluster p-values and get mask por plot
-
+# compute cluster significance and get mask por plot
 # here, we use the distribution of cluster mass bootstrap values
-cluster_pv = _pval_from_histogram(cluster_stats,
-                                  np.sort(cluster_H0),
-                                  tail=1)
 
-# mask p-values above alpha level
-sig_mask = cluster_pv < 0.05
+cluster_thresh = np.quantile(cluster_H0, [.99], axis=0)
+
+# xlsuers above alpha level
+sig_mask = cluster_stats > cluster_thresh
 
 ###############################################################################
 # back projection to channels x time points
 t_vals = t_vals.reshape((n_channels, n_times))
-f_vals = f_vals.reshape((n_channels, n_times))
-sig_mask = sig_mask.reshape((n_channels, n_times))
+f_vals = np.transpose(f_vals.reshape((n_times, n_channels)), (1, 0))
+sig_mask = np.transpose(sig_mask.reshape((n_times, n_channels)), (1, 0))
 
 ###############################################################################
 # create evoked object containing the resulting t-values
