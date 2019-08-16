@@ -198,10 +198,10 @@ for i in range(boot):
 
     # compute t-values for bootstrap sample
     t_val = resampled_betas.mean(axis=0) / se
-    # transfrom to f-values
+    # transform to f-values
     f_vals = t_val ** 2
 
-    # trasnpose for clustering
+    # transpose for clustering
     f_vals = f_vals.reshape((n_channels, n_times))
     f_vals = np.transpose(f_vals, (1, 0))
     f_vals = f_vals.ravel()
