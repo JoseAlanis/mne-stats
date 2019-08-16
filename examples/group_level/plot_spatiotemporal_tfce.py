@@ -12,7 +12,9 @@ Plot significance t-map for effect of continuous variable
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-from mne.stats.cluster_level import _find_clusters,_pval_from_histogram
+from mne.stats.cluster_level import _find_clusters,_setup_connectivity, \
+    _pval_from_histogram
+from mne.channels import find_ch_connectivity
 from mne.datasets import limo
 from mne.decoding import Vectorizer, get_coef
 from mne.evoked import EvokedArray
@@ -152,9 +154,16 @@ random = np.random.RandomState(random_state)
 boot = 2000
 
 # place holders for bootstrap samples
-boot_betas = np.zeros((boot, n_channels * n_times))
-boot_t = np.zeros((boot, n_channels * n_times))
 cluster_H0 = np.zeros(boot)
+f_H0 = np.zeros(boot)
+
+# setup connectivity
+n_tests = betas.shape[1]
+connectivity, ch_names = find_ch_connectivity(epochs_info, ch_type='eeg')
+connectivity = _setup_connectivity(connectivity, n_tests, n_times)
+
+# threshold parameters for clustering
+threshold = dict(start=.1, step=.1)
 
 # run bootstrap for regression coefficients
 for i in range(boot):
@@ -174,17 +183,25 @@ for i in range(boot):
                                        betas.mean(axis=0)
 
     # compute t-values for bootstrap sample
-    boot_t[i, :] = resampled_betas.mean(axis=0) / se
+    t_val = resampled_betas.mean(axis=0) / se
+    # transfrom to f-values
+    f_vals = t_val ** 2
 
     # compute clustering on squared t-values (i.e., f-values)
-    _, cluster_stats = _find_clusters(boot_t[i, :],
-                                      t_power=2,
-                                      threshold=dict(start=.1, step=.1),
-                                      tail=1)
+    clusters, cluster_stats = _find_clusters(f_vals,
+                                             threshold=threshold,
+                                             connectivity=connectivity,
+                                             tail=1)
     # save max cluster mass. Combined, the max cluster mass values from
     # computed on the basis of the bootstrap samples provide an approximation
     # of the cluster mass distribution under H0
-    cluster_H0[i] = cluster_stats.max()
+    if len(clusters):
+        cluster_H0[i] = cluster_stats.max()
+    else:
+        cluster_H0[i] = np.nan
+
+    # save max f-value
+    f_H0[i] = f_vals.max()
 
 ###############################################################################
 # estimate t-test based on original phase coherence betas
@@ -194,9 +211,15 @@ se = betas.std(axis=0) / np.sqrt(betas.shape[0])
 t_vals = betas.mean(axis=0) / se
 f_vals = t_vals ** 2
 
+# transpose for clustering
+f_vals = f_vals.reshape((n_channels, n_times))
+f_vals = np.transpose(f_vals, (1, 0))
+f_vals = f_vals.reshape((n_times * n_channels))
+
 # find clusters
 clusters, cluster_stats = _find_clusters(f_vals,
-                                         threshold=dict(start=.1, step=.1),
+                                         threshold=threshold,
+                                         connectivity=connectivity,
                                          tail=1)
 
 ###############################################################################
