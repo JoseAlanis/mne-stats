@@ -24,7 +24,7 @@ from mne.viz import plot_compare_evokeds
 
 ###############################################################################
 # list with subjects ids that should be imported
-subjects = list(range(1, 19))
+subjects = range(1, 19)
 # create a dictionary containing participants data for easy slicing
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
 
@@ -116,7 +116,7 @@ for iteration, subject in enumerate(limo_epochs.values()):
     del linear_model
 
 ###############################################################################
-# create design matrix fro group-level regression
+# create design matrix from group-level regression
 
 # get participants age
 subj_age = read_csv('./limo_dataset_age.tsv', sep='\t', header=0)
@@ -270,7 +270,7 @@ betas = betas.reshape((betas.shape[0], n_channels, n_times))
 
 optimized_electrode_betas = np.zeros((betas.shape[0], n_times))
 for i in range(betas.shape[0]):
-    optimized_electrode_betas[i, :] = betas[i, optimized_electrode[i], :]
+optimized_electrode_betas = np.array([subj_betas[elec, :] for subj_betas, elec in zip(betas, optimized_electrode)])
 
 ###############################################################################
 # fit linear model with sklearn's LinearRegression
