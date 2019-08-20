@@ -243,24 +243,11 @@ plt.plot()
 # run analysis on optimized electrode (i.e., electrode showing best fit for
 # phase-coherence predictor).
 
-# reshape subjects' R-squared to channels * time-points space
-r_squared = r_squared.reshape((r_squared.shape[0], n_channels, n_times))
-
-# look for electrode with the highest R-squared variance in each subject
-optimized_electrode = []
-for i in range(r_squared.shape[0]):
-    subj_r2 = r_squared[i, :, :]
-
-    # use electrode R-squared variance
-    # electrode_variance = []
-    # for e in range(subj_r2.shape[0]):
-    #     electrode_variance.append(np.var(subj_r2[e, :]))
-
-    # optimized_electrode.append(np.argmax(electrode_variance))
-
-    # or use max R-squared ?
-    optimized_electrode.append(np.unravel_index(r_squared[i, :, :].argmax(),
-                                                r_squared[i, :, :].shape)[0])
+# find R-squared peak for each subject in the data set
+optimized_electrodes = r_squared.argmax(axis=1)
+# find the corresponding electrode
+optimized_electrodes = np.unravel_index(optimized_electrodes,
+                                        (n_channels, n_times))[0]
 
 ###############################################################################
 # extract beta coefficients for electrode showing best fit
@@ -268,16 +255,16 @@ for i in range(r_squared.shape[0]):
 # reshape subjects' beats to channels * time-points space
 betas = betas.reshape((betas.shape[0], n_channels, n_times))
 
-optimized_electrode_betas = np.zeros((betas.shape[0], n_times))
-for i in range(betas.shape[0]):
-optimized_electrode_betas = np.array([subj_betas[elec, :] for subj_betas, elec in zip(betas, optimized_electrode)])
+# get betas for best fitting electrode
+optimized_betas = np.array(
+    [subj[elec, :] for subj, elec in zip(betas, optimized_electrodes)])
 
 ###############################################################################
 # fit linear model with sklearn's LinearRegression
 # we already have an intercept column in the design matrix,
 # thus we'll call LinearRegression with fit_intercept=False
 linear_model = LinearRegression(fit_intercept=False)
-linear_model.fit(group_design, optimized_electrode_betas)
+linear_model.fit(group_design, optimized_betas)
 
 # extract group-level beta coefficients
 group_opt_coefs = get_coef(linear_model, 'coef_')
@@ -308,7 +295,7 @@ for i in range(boot):
                                        replace=True)
 
     # resampled betas
-    resampled_betas = optimized_electrode_betas[resampled_subjects, :]
+    resampled_betas = optimized_betas[resampled_subjects, :]
 
     # set up model and fit model
     model_boot = LinearRegression(fit_intercept=False)
@@ -336,7 +323,7 @@ c = boot - a
 
 # or compute with np.quantile
 # compute low and high percentiles for bootstrapped beta coefficients
-lower_opt_b, upper_opt_b = np.quantile(boot_optimized_betas, [a/boot, c/boot], axis=0)
+lower_ob, upper_ob = np.quantile(boot_optimized_betas, [a/boot, c/boot], axis=0)
 
 ###############################################################################
 # plot the modulating effect of age on the phase coherence predictor for
@@ -346,16 +333,16 @@ lower_opt_b, upper_opt_b = np.quantile(boot_optimized_betas, [a/boot, c/boot], a
 plt.plot(times, group_opt_betas * 1e6)  # transform betas to microvolt
 plt.fill_between(times,
                  # transform values to microvolt
-                 lower_opt_b * 1e6,
-                 upper_opt_b * 1e6,
+                 lower_ob * 1e6,
+                 upper_ob * 1e6,
                  alpha=0.2)
 plt.axhline(y=0, ls='--', lw=0.8, c='k')
 plt.axvline(x=0, ls='--', lw=0.8, c='k')
-plt.ylim(ymax=3, ymin=-3)
+plt.ylim(top=3, bottom=-3)
 plt.xlim(-.1, .45)
 
 ###############################################################################
 # plot histogram of optimized electrode frequencies
 
-electrode_freq = [limo_epochs['1'].ch_names[elec] for elec in optimized_electrode]
+electrode_freq = [limo_epochs['1'].ch_names[e] for e in optimized_electrodes]
 plt.hist(electrode_freq)
