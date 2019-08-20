@@ -12,8 +12,7 @@ Plot significance t-map for effect of continuous variable
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-from mne.stats.cluster_level import _find_clusters,_setup_connectivity, \
-    _pval_from_histogram
+from mne.stats.cluster_level import _find_clusters,_setup_connectivity
 from mne.channels import find_ch_connectivity
 from mne.datasets import limo
 from mne.decoding import Vectorizer, get_coef
@@ -24,7 +23,7 @@ from mne.viz import plot_compare_evokeds
 
 ###############################################################################
 # list with subjects ids that should be imported
-subjects = list(range(1, 19))
+subjects = range(1, 19)
 # create a dictionary containing participants data for easy slicing
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
 
@@ -178,9 +177,7 @@ for i in range(boot):
     se = resampled_betas.std(axis=0) / np.sqrt(resampled_betas.shape[0])
 
     # center re-sampled betas around zero
-    for subj_ind in range(resampled_betas.shape[0]):
-        resampled_betas[subj_ind, :] = resampled_betas[subj_ind, :] - \
-                                       betas.mean(axis=0)
+    resampled_betas -= betas.mean(axis=0)
 
     # compute t-values for bootstrap sample
     t_val = resampled_betas.mean(axis=0) / se
