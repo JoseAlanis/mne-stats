@@ -24,7 +24,7 @@ from mne.viz import plot_compare_evokeds
 
 ###############################################################################
 # list with subjects ids that should be imported
-subjects = list(range(2, 19))
+subjects = range(1, 19)
 # create a dictionary containing participants data for easy slicing
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
 
@@ -275,23 +275,3 @@ plt.hist(boot_t.reshape((boot_t.shape[0],
 plt.axvline(x=lower_t[pick, time_ind_120], color='r')
 plt.axvline(x=upper_t[pick, time_ind_120], color='r')
 plt.title('electrode %s, time ~ .120 s' % electrode)
-
-###############################################################################
-
-# at ~ .150 seconds
-plt.hist(boot_t.reshape((boot_t.shape[0],
-                         n_channels,
-                         n_times))[:, pick, time_ind_160], bins=100)
-plt.axvline(x=lower_t[pick, time_ind_160], color='r')
-plt.axvline(x=upper_t[pick, time_ind_160], color='r')
-plt.title('electrode %s, time ~ .160 s' % electrode)
-
-###############################################################################
-
-# at ~ .200 seconds
-plt.hist(boot_t.reshape((boot_t.shape[0],
-                         n_channels,
-                         n_times))[:, pick, time_ind_200], bins=200)
-plt.axvline(x=lower_t[pick, time_ind_200], color='r')
-plt.axvline(x=upper_t[pick, time_ind_200], color='r')
-plt.title('electrode %s, time ~ .200 s' % electrode)
