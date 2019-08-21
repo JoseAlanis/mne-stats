@@ -205,8 +205,8 @@ gallery_dirs = ['limo_examples']
 
 sphinx_gallery_conf = {
     'examples_dirs': examples_dirs,
-    'subsection_order': ExplicitOrder(['../examples/single/',
-                                      '../examples/group/']),
+    'subsection_order': ExplicitOrder(['../examples/single_subject/',
+                                      '../examples/group_level/']),
     'within_subsection_order': FileNameSortKey,
     'gallery_dirs': gallery_dirs,
     'download_section_examples': False,
