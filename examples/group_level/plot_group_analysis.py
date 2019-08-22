@@ -1,7 +1,7 @@
 """
-==========================================================
-Plot group-level ERPs across levels of continuous variable
-==========================================================
+===============================================================
+Plot group-level ERPs across percentiles of continuous variable
+===============================================================
 
 """
 
@@ -18,6 +18,10 @@ from mne.datasets import limo
 from mne.viz import plot_compare_evokeds
 
 ###############################################################################
+# Here, we'll import multiple subjects from the LIMO-dataset and explore the
+# group-level averages (i.e., grand-averages) for percentiles of a continuous
+# variable.
+
 # subject ids
 subjects = range(2, 19)
 # create a dictionary containing participants data for easy slicing
