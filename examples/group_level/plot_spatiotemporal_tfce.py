@@ -19,9 +19,13 @@ from mne.decoding import Vectorizer, get_coef
 from mne.evoked import EvokedArray
 from mne import combine_evoked
 
-from mne.viz import plot_compare_evokeds
-
 ###############################################################################
+# Here, we'll import multiple subjects from the LIMO-dataset and compute
+# group-level beta-coefficients for a continuous predictor, in addition we show
+# how confidence (or significance) levels can be computed for this effects
+# using the bootstrap-t technique and spatiotemporal clustering and
+# threshold-free cluster enhancement
+
 # list with subjects ids that should be imported
 subjects = range(1, 19)
 # create a dictionary containing participants data for easy slicing
