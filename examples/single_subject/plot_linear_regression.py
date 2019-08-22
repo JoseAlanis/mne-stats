@@ -18,8 +18,9 @@ from mne.stats import linear_regression
 from mne.evoked import EvokedArray
 
 ###############################################################################
-# Here, we'll import only one subject and use the data to bootstrap the
-# beta coefficients derived from linear regression
+# Here, we'll import only one subject and use the data to fit linear regression
+# using `LinearRegression` from `sklearn.linear_model`.
+# We'll compare this results of the output of `mne.stats.linear_regression`
 
 # subject id
 subjects = [2]
