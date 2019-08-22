@@ -26,6 +26,11 @@ from mne.viz import plot_topomap, plot_compare_evokeds, tight_layout
 from mne import combine_evoked, find_layout
 
 ###############################################################################
+# Here, we'll import multiple subjects from the LIMO-dataset and compute
+# group-level beta-coefficients for a continuous predictor, in addition we show
+# how confidence (or significance) levels can be computed for this effects
+# using the bootstrap-t technique and spatiotemporal clustering
+
 # list with subjects ids that should be imported
 subjects = list(range(1, 19))
 # create a dictionary containing participants data for easy slicing
@@ -167,17 +172,7 @@ connectivity, ch_names = find_ch_connectivity(epochs_info, ch_type='eeg')
 connectivity = _setup_connectivity(connectivity, n_tests, n_times)
 
 # threshond for clustering
-threshold = 50.
-
-# # alternative threshold such as pr(>F) [WIP]
-# tail = 1
-# p_thresh = 0.05 / (1 + (1 == 0))
-# dfn = 1
-# dfd = len(betas) - 1
-# threshold = stats.f.ppf(1. - p_thresh, dfn, dfd)
-
-# # or TFCE
-# threshold=dict(start=.1, step=.1),
+threshold = 100.
 
 # run bootstrap for regression coefficients
 for i in range(boot):

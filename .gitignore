@@ -2,5 +2,5 @@
 
 # PyCharm
 .idea/**
-/sphinx/_build/
-/sphinx/limo_examples/
+/sphinx/_build
+/sphinx/limo_examples

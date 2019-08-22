@@ -1,7 +1,7 @@
 """
-===================================
-Plot p-values for beta coefficients
-===================================
+==================================================
+Plot p-values for single subject beta coefficients
+==================================================
 
 References
 ----------
@@ -28,7 +28,13 @@ from mne.stats import fdr_correction
 from mne.viz import plot_compare_evokeds
 
 ###############################################################################
-# list with subjects ids that should be imported
+# Here, we'll import only one subject. The example shows how to compute p-values
+# for  beta coefficients derived from linear regression using sklearn.
+# In addition, we propose to visualize these p-values in terms of
+# Shannon information values [1]_ (i.e., surprise values)
+# for better interpretation.
+
+# subject id
 subjects = [2]
 # create a dictionary containing participants data
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
@@ -60,8 +66,9 @@ predictors = ['intercept', 'face a - face b', 'phase-coherence']
 design = design[predictors]
 
 ###############################################################################
-# --- run linear regression analysis using scikit-learn ---
-# data to be analysed
+# extract the data that will be used in the analyses
+
+# get epochs data
 data = epochs.get_data()
 
 # number of epochs in data set
@@ -82,11 +89,13 @@ dfs = float(n_trials - n_predictors)
 # vectorize (channel) data for linear regression
 Y = Vectorizer().fit_transform(data)
 
+###############################################################################
+# fit linear model with sklearn
+
 # set up model and fit linear model
 linear_model = LinearRegression(fit_intercept=False)
 linear_model.fit(design, Y)
 
-###############################################################################
 # extract the coefficients for linear model estimator
 betas = get_coef(linear_model, 'coef_')
 
@@ -106,7 +115,9 @@ sqrt_mse = np.sqrt(ssr / dfs)
 error_terms = np.sqrt(np.diag(np.linalg.pinv(np.dot(design.T, design))))
 
 ###############################################################################
-# define dictionaries for results
+# extract betas for each predictor in design matrix and compute p-values
+
+# place holders for results
 lm_betas, stderrs, t_vals, p_vals, s_vals = (dict() for _ in range(5))
 
 # define point asymptotic to zero to use as zero
@@ -185,11 +196,12 @@ fig.axes[1].set_title('T-value')
 # only show electrode `B8`
 pick = epochs.info['ch_names'].index('B8')
 fig, ax = plt.subplots(figsize=(7, 4))
-ax = plot_compare_evokeds(s_vals[predictor],
-                          picks=pick,
-                          axes=ax,
-                          show_sensors='upper left')
+plot_compare_evokeds(s_vals[predictor],
+                     picks=pick,
+                     legend='lower left',
+                     axes=ax,
+                     show_sensors='upper left')
 plt.rcParams.update({'mathtext.default':  'regular'})
-ax.axes[0].set_ylabel('$S_{value}$ (-$log_2$($P_{value}$)')
-ax.axes[0].yaxis.set_label_coords(-0.1, 0.5)
+ax.set_ylabel('$S_{value}$ (-$log_2$($P_{value}$)')
+ax.yaxis.set_label_coords(-0.1, 0.5)
 plt.plot()

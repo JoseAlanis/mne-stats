@@ -20,8 +20,12 @@ from mne.datasets import limo
 from mne.evoked import EvokedArray
 
 ###############################################################################
-# list with subjects ids that should be imported
+# Here, we'll import only one subject and use the data to bootstrap the
+# beta coefficients derived from linear regression
+
+# subject id
 subjects = [2]
+
 # create a dictionary containing participants data
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
 
@@ -52,7 +56,9 @@ predictors = ['intercept', 'face a - face b', 'phase-coherence']
 design = design[predictors]
 
 ###############################################################################
-# data to be analysed
+# extract the data that will be used in the analyses
+
+# get epochs data
 data = epochs.get_data()
 
 # number of epochs in data set
@@ -93,11 +99,13 @@ for i in range(boot):
     del model
 
 ###############################################################################
-# compute lower and upper boundaries of confidence interval
+# compute lower and upper boundaries of confidence interval based on
+# distribution of bootstrap betas.
 lower, upper = np.quantile(boot_betas, [.025, .975], axis=0)
 
 ###############################################################################
-# create results object
+# fit linear regression model to original data and store the results in
+# MNE's evoked format for convenience
 
 # set up linear model
 linear_model = LinearRegression(fit_intercept=False)
@@ -140,12 +148,18 @@ lm_betas[predictor].plot_joint(ts_args=ts_args,
                                title='Phase-coherence (sklearn betas)',
                                times=[.23])
 
-# plot effect of phase-coherence on electrode B8 with 95% confidence interval
-fig, ax = plt.subplots(figsize=(10, 7))
-ax = plot_compare_evokeds(lm_betas[predictor], pick,
-                          ylim=dict(eeg=[-11, 1]),
-                          colors=['b'], axes=ax)
-ax.axes[0].fill_between(epochs.times,
-                        ci['lower_bound'][predictor][pick]*1e6,
-                        ci['upper_bound'][predictor][pick]*1e6, alpha=0.25)
+# create plot for the effect of phase-coherence on electrode B8
+# with 95% confidence interval
+fig, ax = plt.subplots(figsize=(8, 5))
+plot_compare_evokeds(lm_betas[predictor],
+                     picks=pick,
+                     ylim=dict(eeg=[-11, 1]),
+                     colors=['k'],
+                     legend='lower left',
+                     axes=ax)
+ax.fill_between(epochs.times,
+                ci['lower_bound'][predictor][pick]*1e6,
+                ci['upper_bound'][predictor][pick]*1e6,
+                color=['k'],
+                alpha=0.2)
 plt.plot()

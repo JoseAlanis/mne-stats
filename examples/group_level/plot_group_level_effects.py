@@ -23,6 +23,9 @@ from mne import combine_evoked
 from mne.viz import plot_compare_evokeds
 
 ###############################################################################
+# Here, we'll import multiple subjects from the LIMO-dataset and explore the
+# group-level beta-coefficients for a continuous predictor.
+
 # list with subjects ids that should be imported
 subjects = range(1, 19)
 # create a dictionary containing participants data for easy slicing
@@ -208,16 +211,18 @@ pick = ga_phase_coherence.ch_names.index(electrode)
 
 # create figure
 fig, ax = plt.subplots(figsize=(7, 4))
-ax = plot_compare_evokeds(ga_phase_coherence,
-                          ylim=dict(eeg=[-1.5, 3.5]),
-                          picks=pick,
-                          show_sensors='upper right',
-                          axes=ax)
-ax[0].axes[0].fill_between(times,
-                           # transform values to microvolt
-                           upper_b[pick] * 1e6,
-                           lower_b[pick] * 1e6,
-                           alpha=0.2)
+plot_compare_evokeds(ga_phase_coherence,
+                     ylim=dict(eeg=[-1.5, 3.5]),
+                     picks=pick,
+                     show_sensors='upper right',
+                     colors=['k'],
+                     axes=ax)
+ax.fill_between(times,
+                # transform values to microvolt
+                upper_b[pick] * 1e6,
+                lower_b[pick] * 1e6,
+                color=['k'],
+                alpha=0.2)
 plt.plot()
 
 ###############################################################################
@@ -264,14 +269,12 @@ fig = group_t['phase-coherence'].plot_topomap(times=[.12, .16, .20],
 # plot t-histograms for n170 effect showing CI boundaries
 
 # times to plot
-time_ind_120 = (times > .119) & (times < .121)
 time_ind_160 = (times > .159) & (times < .161)
-time_ind_200 = (times > .199) & (times < .201)
 
 # at ~ .120 seconds
 plt.hist(boot_t.reshape((boot_t.shape[0],
                          n_channels,
-                         n_times))[:, pick, time_ind_120], bins=100)
-plt.axvline(x=lower_t[pick, time_ind_120], color='r')
-plt.axvline(x=upper_t[pick, time_ind_120], color='r')
+                         n_times))[:, pick, time_ind_160], bins=100)
+plt.axvline(x=lower_t[pick, time_ind_160], color='r')
+plt.axvline(x=upper_t[pick, time_ind_160], color='r')
 plt.title('electrode %s, time ~ .120 s' % electrode)

@@ -1,12 +1,4 @@
-.. _group_examples:
+Group-level analysis
+====================
 
-Group-level analysis examples
-=============================
-
-This section of the documentation covers useful analysis techniques that can be used to estimate linear regression effects on a group level (i.e., including data from multiple subjects).
-
-This section of the documentation is learning-oriented and shows off some of the basic functionality of ``MNE-LIMO``.
-
-.. contents:: Contents
-   :local:
-   :depth: 3
+This section extends the analysis techniques presented in the single subject analysis section, covering useful tools to estimate linear regression effects on a group level (i.e., including data from multiple subjects).
