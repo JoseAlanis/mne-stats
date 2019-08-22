@@ -9,7 +9,7 @@ Plot group-level effect of continuous covariate
 # License: BSD (3-clause)
 
 import numpy as np
-from pandas import read_csv
+from pandas import DataFrame
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 from scipy.stats import zscore
@@ -23,7 +23,14 @@ from mne.evoked import EvokedArray
 from mne.viz import plot_compare_evokeds
 
 ###############################################################################
-# list with subjects ids that should be imported
+# Here, we'll import multiple subjects from the LIMO-dataset
+# and use this data to explore the modulating effects of subjects age on the
+# phase-coherence. i.e., how the effect of phase-coherence varied
+# across subjects as a function of their age. Here we'll create a data frame
+# containing the age values for second-level analysis, but a copy of the
+# data frame can be found as .tsv on the to directory of mne-limo.
+
+# subject ids
 subjects = range(1, 19)
 # create a dictionary containing participants data for easy slicing
 limo_epochs = {str(subj): limo.load_data(subject=subj) for subj in subjects}
@@ -33,6 +40,11 @@ for subject in limo_epochs.values():
     subject.interpolate_bads(reset_bads=True)
     # only keep eeg channels
     subject.pick_types(eeg=True)
+
+# subjects age
+age = [66, 68, 37, 68, 32, 21, 60, 68, 37, 28, 68, 41, 32, 34, 60, 61, 21, 40]
+subj_age = DataFrame(data=age,
+                     columns=['age'])
 
 ###############################################################################
 # regression parameters
@@ -118,16 +130,11 @@ for iteration, subject in enumerate(limo_epochs.values()):
 ###############################################################################
 # create design matrix from group-level regression
 
-# get participants age
-subj_age = read_csv('./limo_dataset_age.tsv', sep='\t', header=0)
-
-# # only keep subjects 2 - 18
-# group_design = subj_age.iloc[1:]
-
-# z-core predictors
+# z-core age predictor
 subj_age['age'] = zscore(subj_age['age'])
-
+# create design matrix
 group_design = subj_age
+
 # add intercept
 group_design = group_design.assign(intercept=1)
 # order columns of design matrix
@@ -175,19 +182,15 @@ for i in range(boot):
 ###############################################################################
 # compute CI boundaries according to:
 # Pernet, C. R., Chauveau, N., Gaspar, C., & Rousselet, G. A. (2011).
-# LIMO EEG: a toolbox for hierarchical LInear MOdeling of ElectroEncephaloGraphic data.
+# LIMO EEG: a toolbox for hierarchical LInear MOdeling of
+# ElectroEncephaloGraphic data.
 # Computational intelligence and neuroscience, 2011, 3.
 
 # a = (alpha * number of bootstraps) / (2 * number of predictors)
 a = (0.05 * boot) / (2 / group_pred_col * 1)
-# # c = number of bootstraps - a
+# c = number of bootstraps - a
 c = boot - a
 
-# # extract boundaries
-# upper_b = np.sort(boot_betas, axis=0)[c, :]
-# lower_b = np.sort(boot_betas, axis=0)[a, :]
-
-# or compute with np.quantile
 # compute low and high percentiles for bootstrapped beta coefficients
 lower_b, upper_b = np.quantile(boot_betas, [a/boot, c/boot], axis=0)
 
@@ -261,8 +264,7 @@ optimized_betas = np.array(
 
 ###############################################################################
 # fit linear model with sklearn's LinearRegression
-# we already have an intercept column in the design matrix,
-# thus we'll call LinearRegression with fit_intercept=False
+
 linear_model = LinearRegression(fit_intercept=False)
 linear_model.fit(group_design, optimized_betas)
 
@@ -313,12 +315,13 @@ for i in range(boot):
 ###############################################################################
 # compute CI boundaries according to:
 # Pernet, C. R., Chauveau, N., Gaspar, C., & Rousselet, G. A. (2011).
-# LIMO EEG: a toolbox for hierarchical LInear MOdeling of ElectroEncephaloGraphic data.
+# LIMO EEG: a toolbox for hierarchical LInear MOdeling of
+# ElectroEncephaloGraphic data.
 # Computational intelligence and neuroscience, 2011, 3.
 
 # a = (alpha * number of bootstraps) / (2 * number of predictors)
 a = (0.05 * boot) / (2 / group_pred_col * 1)
-# # c = number of bootstraps - a
+# c = number of bootstraps - a
 c = boot - a
 
 # or compute with np.quantile
