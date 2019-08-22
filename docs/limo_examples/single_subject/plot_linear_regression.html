@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Plot beta coefficients from linear model estimation with sklearn &#8212; mne-limo 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/reset-syntax.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-LIMO</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../whats_new.html">What's new</a></li>
+                <li><a href="../index.html">Examples</a></li>
+                <li><a href="https://github.com/JoseAlanis/mne-stats">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Plot beta coefficients from linear model estimation with sklearn</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/limo_examples/single_subject/plot_linear_regression.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container content-container">
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-limo-examples-single-subject-plot-linear-regression-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="plot-beta-coefficients-from-linear-model-estimation-with-sklearn">
+<span id="sphx-glr-limo-examples-single-subject-plot-linear-regression-py"></span><h1>Plot beta coefficients from linear model estimation with sklearn<a class="headerlink" href="#plot-beta-coefficients-from-linear-model-estimation-with-sklearn" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Jose C. Garcia Alanis &lt;alanis.jcg@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a>
+
+<span class="kn">from</span> <span class="nn">mne.decoding</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="View documentation for mne.decoding.Vectorizer"><span class="n">Vectorizer</span></a><span class="p">,</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="k">import</span> <span class="n">limo</span>
+<span class="kn">from</span> <span class="nn">mne.stats</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.stats.linear_regression.html#mne.stats.linear_regression" title="View documentation for mne.stats.linear_regression"><span class="n">linear_regression</span></a>
+<span class="kn">from</span> <span class="nn">mne.evoked</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a>
+</pre></div>
+</div>
+<p>Here, we’ll import only one subject and use the data to fit linear regression
+using <cite>LinearRegression</cite> from <cite>sklearn.linear_model</cite>.
+We’ll compare this results of the output of <cite>mne.stats.linear_regression</cite></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># subject id</span>
+<span class="n">subjects</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="c1"># create a dictionary containing participants data</span>
+<span class="n">limo_epochs</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">subj</span><span class="p">):</span> <span class="n">limo</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subj</span><span class="p">)</span> <span class="k">for</span> <span class="n">subj</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">}</span>
+
+<span class="c1"># interpolate missing channels</span>
+<span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">limo_epochs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="n">subject</span><span class="o">.</span><span class="n">interpolate_bads</span><span class="p">(</span><span class="n">reset_bads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># epochs to use for analysis</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span>
+
+<span class="c1"># only keep eeg channels</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># save epochs information (needed for creating a homologous</span>
+<span class="c1"># epochs object containing linear regression result)</span>
+<span class="n">epochs_info</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">info</span>
+<span class="n">tmin</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">tmin</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>1052 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+</pre></div>
+</div>
+<p>use epochs metadata to create design matrix for linear regression analyses</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># add intercept</span>
+<span class="n">design</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">intercept</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># effect code contrast for categorical variable (i.e., condition a vs. b)</span>
+<span class="n">design</span><span class="p">[</span><span class="s1">&#39;face a - face b&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><span class="n">design</span><span class="p">[</span><span class="s1">&#39;face&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># create design matrix with named predictors</span>
+<span class="n">predictors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;intercept&#39;</span><span class="p">,</span> <span class="s1">&#39;face a - face b&#39;</span><span class="p">,</span> <span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span>
+<span class="n">design</span> <span class="o">=</span> <span class="n">design</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>extract the data that will be used in the analyses</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># get epochs data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+<span class="c1"># number of epochs in data set</span>
+<span class="n">n_epochs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># number of channels and number of time points in each epoch</span>
+<span class="c1"># we&#39;ll use this information later to bring the results of the</span>
+<span class="c1"># the linear regression algorithm into an eeg-like format</span>
+<span class="c1"># (i.e., channels x times points)</span>
+<span class="n">n_channels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">n_times</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">epochs</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># vectorize (channel) data for linear regression</span>
+<span class="n">Y</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="View documentation for mne.decoding.Vectorizer"><span class="n">Vectorizer</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>fit linear model with sklearn</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># here, we already have an intercept column in the design matrix,</span>
+<span class="c1"># thus we&#39;ll call LinearRegression with fit_intercept=False</span>
+<span class="n">linear_model</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">linear_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+<span class="c1"># next, we&#39;ll extract the resulting coefficients (i.e., betas)</span>
+<span class="c1"># from the linear model estimator.</span>
+<span class="n">betas</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a><span class="p">(</span><span class="n">linear_model</span><span class="p">,</span> <span class="s1">&#39;coef_&#39;</span><span class="p">)</span>
+
+<span class="c1"># notice that the resulting matrix of coefficients has a shape of</span>
+<span class="c1"># number of observations in the vertorized channel data (i.e, these represent</span>
+<span class="c1"># teh data points want to predict) by number of predictors.</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># thus, we can loop through the columns (i.e., the predictors) of the</span>
+<span class="c1"># coefficient matrix and extract coefficients for each predictor and project</span>
+<span class="c1"># them back to a channels x time points space.</span>
+<span class="n">lm_betas</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">predictor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">predictors</span><span class="p">):</span>
+    <span class="c1"># extract coefficients</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">betas</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
+    <span class="c1"># back projection to channels x time points</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+    <span class="c1"># create evoked object containing the back projected coefficients</span>
+    <span class="c1"># for each predictor</span>
+    <span class="n">lm_betas</span><span class="p">[</span><span class="n">predictor</span><span class="p">]</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">epochs_info</span><span class="p">,</span> <span class="n">tmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(25728, 3)
+</pre></div>
+</div>
+<p>plot results of linear regression</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># only show -250 to 500 ms</span>
+<span class="n">ts_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="o">-.</span><span class="mi">25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+<span class="c1"># visualise effect of phase-coherence for sklearn estimation method.</span>
+<span class="n">lm_betas</span><span class="p">[</span><span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot_joint</span><span class="p">(</span><span class="n">ts_args</span><span class="o">=</span><span class="n">ts_args</span><span class="p">,</span>
+                                       <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Phase-coherence - sklearn betas&#39;</span><span class="p">,</span>
+                                       <span class="n">times</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">23</span><span class="p">])</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_plot_linear_regression_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_linear_regression_001.png" />
+<p>replicate analysis using mne.stats.linear_regression</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reg</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.stats.linear_regression.html#mne.stats.linear_regression" title="View documentation for mne.stats.linear_regression"><span class="n">linear_regression</span></a><span class="p">(</span><span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">],</span> <span class="n">design</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">predictors</span><span class="p">)</span>
+
+<span class="c1"># visualise effect of phase-coherence for mne.stats method.</span>
+<span class="n">reg</span><span class="p">[</span><span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">plot_joint</span><span class="p">(</span><span class="n">ts_args</span><span class="o">=</span><span class="n">ts_args</span><span class="p">,</span>
+                                       <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Phase-coherence - mne betas&#39;</span><span class="p">,</span>
+                                       <span class="n">times</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">23</span><span class="p">])</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_plot_linear_regression_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_linear_regression_002.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Fitting linear model to epochs, (25728 targets, 3 regressors)
+Done
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.110 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-limo-examples-single-subject-plot-linear-regression-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" download="" href="../../_downloads/2f58fa8fa864a1b3340da518fa294347/plot_linear_regression.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_linear_regression.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" download="" href="../../_downloads/b5b17dddd0dc8b55ac2954ac22b730a9/plot_linear_regression.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_linear_regression.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+</div>
+
+<!-- Github "fork me" ribbon -->
+<!--<a href="https://github.com/autoreject/autoreject"><img style="position: absolute; top: 50px; right: 0; border: 0;" -->
+<!--src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"-->
+<!--alt="Fork me on GitHub"-->
+<!--data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>-->
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, José C. García Alanis.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

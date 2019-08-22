@@ -1,0 +1,13 @@
+
+:orphan:
+
+.. _sphx_glr_limo_examples_single_subject_sg_execution_times:
+
+Computation times
+=================
+**20:00.585** total execution time for **limo_examples_single_subject** files:
+
+- **19:49.079**: :ref:`sphx_glr_limo_examples_single_subject_plot_bootstrap_ci.py` (``plot_bootstrap_ci.py``)
+- **00:04.110**: :ref:`sphx_glr_limo_examples_single_subject_plot_linear_regression.py` (``plot_linear_regression.py``)
+- **00:03.817**: :ref:`sphx_glr_limo_examples_single_subject_plot_p_values.py` (``plot_p_values.py``)
+- **00:03.580**: :ref:`sphx_glr_limo_examples_single_subject_plot_r_squared.py` (``plot_r_squared.py``)
