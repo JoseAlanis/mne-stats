@@ -1,0 +1,14 @@
+
+:orphan:
+
+.. _sphx_glr_limo_examples_group_level_sg_execution_times:
+
+Computation times
+=================
+**137:12.638** total execution time for **limo_examples_group_level** files:
+
+- **133:31.569**: :ref:`sphx_glr_limo_examples_group_level_plot_spatiotemporal_tfce.py` (``plot_spatiotemporal_tfce.py``)
+- **01:12.565**: :ref:`sphx_glr_limo_examples_group_level_plot_continuous_covariate.py` (``plot_continuous_covariate.py``)
+- **01:02.041**: :ref:`sphx_glr_limo_examples_group_level_plot_group_level_effects.py` (``plot_group_level_effects.py``)
+- **00:48.309**: :ref:`sphx_glr_limo_examples_group_level_plot_spatiotemporal_cluster.py` (``plot_spatiotemporal_cluster.py``)
+- **00:38.154**: :ref:`sphx_glr_limo_examples_group_level_plot_group_analysis.py` (``plot_group_analysis.py``)

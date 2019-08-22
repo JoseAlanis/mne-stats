@@ -1,0 +1,254 @@
+:orphan:
+
+
+
+.. _sphx_glr_limo_examples:
+
+.. _general_examples:
+
+Examples Gallery
+================
+
+This section of the documentation is learning-oriented and shows off some of the basic functionality of ``MNE-LIMO``.
+
+.. contents:: Contents
+   :local:
+   :depth: 2
+
+
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+
+
+.. _sphx_glr_limo_examples_single_subject:
+
+Single subject analysis
+=======================
+
+This section covers useful analysis techniques that can be used to estimate linear regression effects on a single subject level.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Plot bootstrapped confidence interval for linear model fit">
+
+.. only:: html
+
+    .. figure:: /limo_examples/single_subject/images/thumb/sphx_glr_plot_bootstrap_ci_thumb.png
+
+        :ref:`sphx_glr_limo_examples_single_subject_plot_bootstrap_ci.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /limo_examples/single_subject/plot_bootstrap_ci
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Plot beta coefficients from linear model estimation with sklearn">
+
+.. only:: html
+
+    .. figure:: /limo_examples/single_subject/images/thumb/sphx_glr_plot_linear_regression_thumb.png
+
+        :ref:`sphx_glr_limo_examples_single_subject_plot_linear_regression.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /limo_examples/single_subject/plot_linear_regression
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="References ---------- .. [1] Sander Greenland (2019) Valid P-Values Behave Exactly as They Shou...">
+
+.. only:: html
+
+    .. figure:: /limo_examples/single_subject/images/thumb/sphx_glr_plot_p_values_thumb.png
+
+        :ref:`sphx_glr_limo_examples_single_subject_plot_p_values.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /limo_examples/single_subject/plot_p_values
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Plot R">
+
+.. only:: html
+
+    .. figure:: /limo_examples/single_subject/images/thumb/sphx_glr_plot_r_squared_thumb.png
+
+        :ref:`sphx_glr_limo_examples_single_subject_plot_r_squared.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /limo_examples/single_subject/plot_r_squared
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+
+
+.. _sphx_glr_limo_examples_group_level:
+
+Group-level analysis
+====================
+
+This section extends the analysis techniques presented in the single subject analysis section, covering useful tools to estimate linear regression effects on a group level (i.e., including data from multiple subjects).
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Plot group">
+
+.. only:: html
+
+    .. figure:: /limo_examples/group_level/images/thumb/sphx_glr_plot_continuous_covariate_thumb.png
+
+        :ref:`sphx_glr_limo_examples_group_level_plot_continuous_covariate.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /limo_examples/group_level/plot_continuous_covariate
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Plot group">
+
+.. only:: html
+
+    .. figure:: /limo_examples/group_level/images/thumb/sphx_glr_plot_group_analysis_thumb.png
+
+        :ref:`sphx_glr_limo_examples_group_level_plot_group_analysis.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /limo_examples/group_level/plot_group_analysis
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Plot group">
+
+.. only:: html
+
+    .. figure:: /limo_examples/group_level/images/thumb/sphx_glr_plot_group_level_effects_thumb.png
+
+        :ref:`sphx_glr_limo_examples_group_level_plot_group_level_effects.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /limo_examples/group_level/plot_group_level_effects
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Plot spatiotemporal clustering results for effect of continuous variable">
+
+.. only:: html
+
+    .. figure:: /limo_examples/group_level/images/thumb/sphx_glr_plot_spatiotemporal_cluster_thumb.png
+
+        :ref:`sphx_glr_limo_examples_group_level_plot_spatiotemporal_cluster.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /limo_examples/group_level/plot_spatiotemporal_cluster
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Plot significance t">
+
+.. only:: html
+
+    .. figure:: /limo_examples/group_level/images/thumb/sphx_glr_plot_spatiotemporal_tfce_thumb.png
+
+        :ref:`sphx_glr_limo_examples_group_level_plot_spatiotemporal_tfce.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /limo_examples/group_level/plot_spatiotemporal_tfce
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-gallery
+
+
+  .. container:: sphx-glr-download
+
+    :download:`Download all examples in Python source code: limo_examples_python.zip <//home/josealanis/Documents/github/mne-stats/sphinx/limo_examples/limo_examples_python.zip>`
+
+
+
+  .. container:: sphx-glr-download
+
+    :download:`Download all examples in Jupyter notebooks: limo_examples_jupyter.zip <//home/josealanis/Documents/github/mne-stats/sphinx/limo_examples/limo_examples_jupyter.zip>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

@@ -1,0 +1,607 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Plot group-level effect of continuous covariate &#8212; mne-limo 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/reset-syntax.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-LIMO</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../whats_new.html">What's new</a></li>
+                <li><a href="../index.html">Examples</a></li>
+                <li><a href="https://github.com/JoseAlanis/mne-stats">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Plot group-level effect of continuous covariate</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/limo_examples/group_level/plot_continuous_covariate.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container content-container">
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-limo-examples-group-level-plot-continuous-covariate-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="plot-group-level-effect-of-continuous-covariate">
+<span id="sphx-glr-limo-examples-group-level-plot-continuous-covariate-py"></span><h1>Plot group-level effect of continuous covariate<a class="headerlink" href="#plot-group-level-effect-of-continuous-covariate" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Jose C. Garcia Alanis &lt;alanis.jcg@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html#sklearn.metrics.r2_score" title="View documentation for sklearn.metrics.r2_score"><span class="n">r2_score</span></a>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">zscore</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="k">import</span> <span class="n">limo</span>
+<span class="kn">from</span> <span class="nn">mne.decoding</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="View documentation for mne.decoding.Vectorizer"><span class="n">Vectorizer</span></a><span class="p">,</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a>
+<span class="kn">from</span> <span class="nn">mne.evoked</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a>
+
+<span class="kn">from</span> <span class="nn">mne.viz</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.viz.plot_compare_evokeds.html#mne.viz.plot_compare_evokeds" title="View documentation for mne.viz.plot_compare_evokeds"><span class="n">plot_compare_evokeds</span></a>
+</pre></div>
+</div>
+<p>Here, we’ll import multiple subjects from the LIMO-dataset
+and use this data to explore the modulating effects of subjects age on the
+phase-coherence. i.e., how the effect of phase-coherence varied
+across subjects as a function of their age. Here we’ll create a data frame
+containing the age values for second-level analysis, but a copy of the
+data frame can be found as .tsv on the to directory of mne-limo.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># subject ids</span>
+<span class="n">subjects</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
+<span class="c1"># create a dictionary containing participants data for easy slicing</span>
+<span class="n">limo_epochs</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">subj</span><span class="p">):</span> <span class="n">limo</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subj</span><span class="p">)</span> <span class="k">for</span> <span class="n">subj</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">}</span>
+
+<span class="c1"># interpolate missing channels</span>
+<span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">limo_epochs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="n">subject</span><span class="o">.</span><span class="n">interpolate_bads</span><span class="p">(</span><span class="n">reset_bads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># only keep eeg channels</span>
+    <span class="n">subject</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># subjects age</span>
+<span class="n">age</span> <span class="o">=</span> <span class="p">[</span><span class="mi">66</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">40</span><span class="p">]</span>
+<span class="n">subj_age</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">age</span><span class="p">,</span>
+                     <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>1055 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1052 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1072 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1050 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1118 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1108 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1060 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1030 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1059 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1038 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1029 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+943 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1108 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+998 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1076 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1061 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1098 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1103 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+Computing interpolation matrix from 113 sensor positions
+Interpolating 15 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 121 sensor positions
+Interpolating 7 sensors
+Computing interpolation matrix from 119 sensor positions
+Interpolating 9 sensors
+Computing interpolation matrix from 122 sensor positions
+Interpolating 6 sensors
+Computing interpolation matrix from 118 sensor positions
+Interpolating 10 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 121 sensor positions
+Interpolating 7 sensors
+Computing interpolation matrix from 116 sensor positions
+Interpolating 12 sensors
+/home/josealanis/Documents/github/mne-stats/examples/group_level/plot_continuous_covariate.py:40: RuntimeWarning: No bad channels to interpolate. Doing nothing...
+  subject.interpolate_bads(reset_bads=True)
+Computing interpolation matrix from 115 sensor positions
+Interpolating 13 sensors
+Computing interpolation matrix from 122 sensor positions
+Interpolating 6 sensors
+Computing interpolation matrix from 114 sensor positions
+Interpolating 14 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 125 sensor positions
+Interpolating 3 sensors
+Computing interpolation matrix from 126 sensor positions
+Interpolating 2 sensors
+Computing interpolation matrix from 122 sensor positions
+Interpolating 6 sensors
+</pre></div>
+</div>
+<p>regression parameters</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># variables to be used in the analysis (i.e., predictors)</span>
+<span class="n">predictors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;intercept&#39;</span><span class="p">,</span> <span class="s1">&#39;face a - face b&#39;</span><span class="p">,</span> <span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span>
+
+<span class="c1"># number of predictors</span>
+<span class="n">n_predictors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">predictors</span><span class="p">)</span>
+
+<span class="c1"># save epochs information (needed for creating a homologous</span>
+<span class="c1"># epochs object containing linear regression result)</span>
+<span class="n">epochs_info</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">info</span>
+
+<span class="c1"># number of channels and number of time points in each epoch</span>
+<span class="c1"># we&#39;ll use this information later to bring the results of the</span>
+<span class="c1"># the linear regression algorithm into an eeg-like format</span>
+<span class="c1"># (i.e., channels x times points)</span>
+<span class="n">n_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">epochs_info</span><span class="p">[</span><span class="s1">&#39;ch_names&#39;</span><span class="p">])</span>
+<span class="n">n_times</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">limo_epochs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># also save times first time-point in data</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">times</span>
+<span class="n">tmin</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">tmin</span>
+</pre></div>
+</div>
+<p>create empty objects  for the storage of results</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># place holders for bootstrap samples</span>
+<span class="n">betas</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">limo_epochs</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                  <span class="n">n_channels</span> <span class="o">*</span> <span class="n">n_times</span><span class="p">))</span>
+<span class="n">r_squared</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">limo_epochs</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                      <span class="n">n_channels</span> <span class="o">*</span> <span class="n">n_times</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>run regression analysis for each subject</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># loop through subjects, set up and fit linear model</span>
+<span class="k">for</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">subject</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">limo_epochs</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+
+    <span class="c1"># --- 1) create design matrix ---</span>
+    <span class="c1"># use epochs metadata</span>
+    <span class="n">design</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># add intercept (constant) to design matrix</span>
+    <span class="n">design</span> <span class="o">=</span> <span class="n">design</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">intercept</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># effect code contrast for categorical variable (i.e., condition a vs. b)</span>
+    <span class="n">design</span><span class="p">[</span><span class="s1">&#39;face a - face b&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><span class="n">design</span><span class="p">[</span><span class="s1">&#39;face&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># order columns of design matrix</span>
+    <span class="n">design</span> <span class="o">=</span> <span class="n">design</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
+
+    <span class="c1"># column of betas array (i.e., predictor) to run bootstrap on</span>
+    <span class="n">pred_col</span> <span class="o">=</span> <span class="n">predictors</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;phase-coherence&#39;</span><span class="p">)</span>
+
+    <span class="c1"># --- 2) vectorize (eeg-channel) data for linear regression analysis ---</span>
+    <span class="c1"># data to be analysed</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+    <span class="c1"># vectorize data across channels</span>
+    <span class="n">Y</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="View documentation for mne.decoding.Vectorizer"><span class="n">Vectorizer</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># --- 3) fit linear model with sklearn&#39;s LinearRegression ---</span>
+    <span class="c1"># we already have an intercept column in the design matrix,</span>
+    <span class="c1"># thus we&#39;ll call LinearRegression with fit_intercept=False</span>
+    <span class="n">linear_model</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">linear_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+    <span class="c1"># --- 4) extract the resulting coefficients (i.e., betas) ---</span>
+    <span class="c1"># extract betas</span>
+    <span class="n">coefs</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a><span class="p">(</span><span class="n">linear_model</span><span class="p">,</span> <span class="s1">&#39;coef_&#39;</span><span class="p">)</span>
+    <span class="c1"># only keep relevant predictor</span>
+    <span class="n">betas</span><span class="p">[</span><span class="n">iteration</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coefs</span><span class="p">[:,</span> <span class="n">pred_col</span><span class="p">]</span>
+
+    <span class="c1"># calculate coefficient of determination (r-squared)</span>
+    <span class="n">r_squared</span><span class="p">[</span><span class="n">iteration</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html#sklearn.metrics.r2_score" title="View documentation for sklearn.metrics.r2_score"><span class="n">r2_score</span></a><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">design</span><span class="p">),</span>
+                                       <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;raw_values&#39;</span><span class="p">)</span>
+
+    <span class="c1"># clean up</span>
+    <span class="k">del</span> <span class="n">linear_model</span>
+</pre></div>
+</div>
+<p>create design matrix from group-level regression</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># z-core age predictor</span>
+<span class="n">subj_age</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">zscore</span><span class="p">(</span><span class="n">subj_age</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">])</span>
+<span class="c1"># create design matrix</span>
+<span class="n">group_design</span> <span class="o">=</span> <span class="n">subj_age</span>
+
+<span class="c1"># add intercept</span>
+<span class="n">group_design</span> <span class="o">=</span> <span class="n">group_design</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">intercept</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># order columns of design matrix</span>
+<span class="n">group_predictors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;intercept&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">]</span>
+<span class="n">group_design</span> <span class="o">=</span> <span class="n">group_design</span><span class="p">[</span><span class="n">group_predictors</span><span class="p">]</span>
+
+<span class="c1"># column index of relevant predictor</span>
+<span class="n">group_pred_col</span> <span class="o">=</span> <span class="n">group_predictors</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>run bootstrap for group-level regression coefficients</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set random state for replication</span>
+<span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">random</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.random.html#numpy.random.RandomState" title="View documentation for numpy.random.RandomState"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span></a><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+
+<span class="c1"># number of random samples</span>
+<span class="n">boot</span> <span class="o">=</span> <span class="mi">2000</span>
+
+<span class="c1"># create empty array for saving the bootstrap samples</span>
+<span class="n">boot_betas</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="n">boot</span><span class="p">,</span> <span class="n">n_channels</span> <span class="o">*</span> <span class="n">n_times</span><span class="p">))</span>
+<span class="c1"># run bootstrap for regression coefficients</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">boot</span><span class="p">):</span>
+    <span class="c1"># extract random subjects from overall sample</span>
+    <span class="n">resampled_subjects</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                       <span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                       <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># resampled betas</span>
+    <span class="n">resampled_betas</span> <span class="o">=</span> <span class="n">betas</span><span class="p">[</span><span class="n">resampled_subjects</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># set up model and fit model</span>
+    <span class="n">model_boot</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">model_boot</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">group_design</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">resampled_subjects</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">resampled_betas</span><span class="p">)</span>
+
+    <span class="c1"># extract regression coefficients</span>
+    <span class="n">group_coefs</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a><span class="p">(</span><span class="n">model_boot</span><span class="p">,</span> <span class="s1">&#39;coef_&#39;</span><span class="p">)</span>
+
+    <span class="c1"># store regression coefficient for age covariate</span>
+    <span class="n">boot_betas</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">group_coefs</span><span class="p">[:,</span> <span class="n">group_pred_col</span><span class="p">]</span>
+
+    <span class="c1"># delete the previously fitted model</span>
+    <span class="k">del</span> <span class="n">model_boot</span>
+</pre></div>
+</div>
+<p>compute CI boundaries according to:
+Pernet, C. R., Chauveau, N., Gaspar, C., &amp; Rousselet, G. A. (2011).
+LIMO EEG: a toolbox for hierarchical LInear MOdeling of
+ElectroEncephaloGraphic data.
+Computational intelligence and neuroscience, 2011, 3.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># a = (alpha * number of bootstraps) / (2 * number of predictors)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">boot</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">group_pred_col</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c1"># c = number of bootstraps - a</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">boot</span> <span class="o">-</span> <span class="n">a</span>
+
+<span class="c1"># compute low and high percentiles for bootstrapped beta coefficients</span>
+<span class="n">lower_b</span><span class="p">,</span> <span class="n">upper_b</span> <span class="o">=</span> <a href="https://www.numpy.org/devdocs/reference/generated/numpy.quantile.html#numpy.quantile" title="View documentation for numpy.quantile"><span class="n">np</span><span class="o">.</span><span class="n">quantile</span></a><span class="p">(</span><span class="n">boot_betas</span><span class="p">,</span> <span class="p">[</span><span class="n">a</span><span class="o">/</span><span class="n">boot</span><span class="p">,</span> <span class="n">c</span><span class="o">/</span><span class="n">boot</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># reshape to channels * time-points space</span>
+<span class="n">lower_b</span> <span class="o">=</span> <span class="n">lower_b</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+<span class="n">upper_b</span> <span class="o">=</span> <span class="n">upper_b</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>fit linear model with sklearn’s LinearRegression
+we already have an intercept column in the design matrix,
+thus we’ll call LinearRegression with fit_intercept=False</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set up and fit model</span>
+<span class="n">linear_model</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">linear_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">group_design</span><span class="p">,</span> <span class="n">betas</span><span class="p">)</span>
+
+<span class="c1"># extract group-level beta coefficients</span>
+<span class="n">group_coefs</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a><span class="p">(</span><span class="n">linear_model</span><span class="p">,</span> <span class="s1">&#39;coef_&#39;</span><span class="p">)</span>
+
+<span class="c1"># only keep relevant predictor</span>
+<span class="n">group_betas</span> <span class="o">=</span> <span class="n">group_coefs</span><span class="p">[:,</span> <span class="n">group_pred_col</span><span class="p">]</span>
+
+<span class="c1"># back projection to channels x time points</span>
+<span class="n">group_betas</span> <span class="o">=</span> <span class="n">group_betas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+<span class="c1"># create evoked object containing the back projected coefficients</span>
+<span class="n">group_betas_evoked</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a><span class="p">(</span><span class="n">group_betas</span><span class="p">,</span> <span class="n">epochs_info</span><span class="p">,</span> <span class="n">tmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>plot the modulating effect of age on the phase coherence predictor (i.e.,
+how the effect of phase coherence varies as a function of subject age)
+using whole electrode montage and whole scalp by taking the
+same physical electrodes across subjects</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># index of B8 in array</span>
+<span class="n">electrode</span> <span class="o">=</span> <span class="s1">&#39;B8&#39;</span>
+<span class="n">pick</span> <span class="o">=</span> <span class="n">group_betas_evoked</span><span class="o">.</span><span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">electrode</span><span class="p">)</span>
+
+<span class="c1"># create figure</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.viz.plot_compare_evokeds.html#mne.viz.plot_compare_evokeds" title="View documentation for mne.viz.plot_compare_evokeds"><span class="n">plot_compare_evokeds</span></a><span class="p">(</span><span class="n">group_betas_evoked</span><span class="p">,</span>
+                          <span class="n">ylim</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
+                          <span class="n">picks</span><span class="o">=</span><span class="n">pick</span><span class="p">,</span>
+                          <span class="n">show_sensors</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">,</span>
+                          <span class="n">axes</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">times</span><span class="p">,</span>
+                           <span class="c1"># transform values to microvolt</span>
+                           <span class="n">upper_b</span><span class="p">[</span><span class="n">pick</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span>
+                           <span class="n">lower_b</span><span class="p">[</span><span class="n">pick</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span>
+                           <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_plot_continuous_covariate_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_continuous_covariate_001.png" />
+<p>run analysis on optimized electrode (i.e., electrode showing best fit for
+phase-coherence predictor).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># find R-squared peak for each subject in the data set</span>
+<span class="n">optimized_electrodes</span> <span class="o">=</span> <span class="n">r_squared</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># find the corresponding electrode</span>
+<span class="n">optimized_electrodes</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.unravel_index" title="View documentation for numpy.unravel_index"><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span></a><span class="p">(</span><span class="n">optimized_electrodes</span><span class="p">,</span>
+                                        <span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>extract beta coefficients for electrode showing best fit</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># reshape subjects&#39; beats to channels * time-points space</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="n">betas</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+
+<span class="c1"># get betas for best fitting electrode</span>
+<span class="n">optimized_betas</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span>
+    <span class="p">[</span><span class="n">subj</span><span class="p">[</span><span class="n">elec</span><span class="p">,</span> <span class="p">:]</span> <span class="k">for</span> <span class="n">subj</span><span class="p">,</span> <span class="n">elec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">optimized_electrodes</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>fit linear model with sklearn’s LinearRegression</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">linear_model</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">linear_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">group_design</span><span class="p">,</span> <span class="n">optimized_betas</span><span class="p">)</span>
+
+<span class="c1"># extract group-level beta coefficients</span>
+<span class="n">group_opt_coefs</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a><span class="p">(</span><span class="n">linear_model</span><span class="p">,</span> <span class="s1">&#39;coef_&#39;</span><span class="p">)</span>
+
+<span class="c1"># only keep relevant predictor</span>
+<span class="n">group_pred_col</span> <span class="o">=</span> <span class="n">group_predictors</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="n">group_opt_betas</span> <span class="o">=</span> <span class="n">group_opt_coefs</span><span class="p">[:,</span> <span class="n">group_pred_col</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>run bootstrap for group-level regression coefficients derived from
+optimized electrode analyisis</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set random state for replication</span>
+<span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">random</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.random.html#numpy.random.RandomState" title="View documentation for numpy.random.RandomState"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span></a><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+
+<span class="c1"># number of random samples</span>
+<span class="n">boot</span> <span class="o">=</span> <span class="mi">2000</span>
+
+<span class="c1"># create empty array for saving the bootstrap samples</span>
+<span class="n">boot_optimized_betas</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="n">boot</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+<span class="c1"># run bootstrap for regression coefficients</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">boot</span><span class="p">):</span>
+    <span class="c1"># extract random subjects from overall sample</span>
+    <span class="n">resampled_subjects</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                       <span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                       <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># resampled betas</span>
+    <span class="n">resampled_betas</span> <span class="o">=</span> <span class="n">optimized_betas</span><span class="p">[</span><span class="n">resampled_subjects</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># set up model and fit model</span>
+    <span class="n">model_boot</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">model_boot</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">group_design</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">resampled_subjects</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">resampled_betas</span><span class="p">)</span>
+
+    <span class="c1"># extract regression coefficients</span>
+    <span class="n">group_opt_coefs</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a><span class="p">(</span><span class="n">model_boot</span><span class="p">,</span> <span class="s1">&#39;coef_&#39;</span><span class="p">)</span>
+
+    <span class="c1"># store regression coefficient for age covariate</span>
+    <span class="n">boot_optimized_betas</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">group_opt_coefs</span><span class="p">[:,</span> <span class="n">group_pred_col</span><span class="p">]</span>
+
+    <span class="c1"># delete the previously fitted model</span>
+    <span class="k">del</span> <span class="n">model_boot</span>
+</pre></div>
+</div>
+<p>compute CI boundaries according to:
+Pernet, C. R., Chauveau, N., Gaspar, C., &amp; Rousselet, G. A. (2011).
+LIMO EEG: a toolbox for hierarchical LInear MOdeling of
+ElectroEncephaloGraphic data.
+Computational intelligence and neuroscience, 2011, 3.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># a = (alpha * number of bootstraps) / (2 * number of predictors)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">boot</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">group_pred_col</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c1"># c = number of bootstraps - a</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">boot</span> <span class="o">-</span> <span class="n">a</span>
+
+<span class="c1"># or compute with np.quantile</span>
+<span class="c1"># compute low and high percentiles for bootstrapped beta coefficients</span>
+<span class="n">lower_ob</span><span class="p">,</span> <span class="n">upper_ob</span> <span class="o">=</span> <a href="https://www.numpy.org/devdocs/reference/generated/numpy.quantile.html#numpy.quantile" title="View documentation for numpy.quantile"><span class="n">np</span><span class="o">.</span><span class="n">quantile</span></a><span class="p">(</span><span class="n">boot_optimized_betas</span><span class="p">,</span> <span class="p">[</span><span class="n">a</span><span class="o">/</span><span class="n">boot</span><span class="p">,</span> <span class="n">c</span><span class="o">/</span><span class="n">boot</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>plot the modulating effect of age on the phase coherence predictor for
+optimized electrode</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># create figure</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">group_opt_betas</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">)</span>  <span class="c1"># transform betas to microvolt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">times</span><span class="p">,</span>
+                 <span class="c1"># transform values to microvolt</span>
+                 <span class="n">lower_ob</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span>
+                 <span class="n">upper_ob</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">,</span>
+                 <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=-</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">45</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_plot_continuous_covariate_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_continuous_covariate_002.png" />
+<p>plot histogram of optimized electrode frequencies</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">electrode_freq</span> <span class="o">=</span> <span class="p">[</span><span class="n">limo_epochs</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">optimized_electrodes</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">electrode_freq</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_plot_continuous_covariate_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_continuous_covariate_003.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  12.565 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-limo-examples-group-level-plot-continuous-covariate-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" download="" href="../../_downloads/3800a45d62a875405aa8eb919942d6d0/plot_continuous_covariate.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_continuous_covariate.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" download="" href="../../_downloads/48767ea01d2f10284ac6f5a082a6ee1e/plot_continuous_covariate.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_continuous_covariate.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+</div>
+
+<!-- Github "fork me" ribbon -->
+<!--<a href="https://github.com/autoreject/autoreject"><img style="position: absolute; top: 50px; right: 0; border: 0;" -->
+<!--src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"-->
+<!--alt="Fork me on GitHub"-->
+<!--data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>-->
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, José C. García Alanis.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

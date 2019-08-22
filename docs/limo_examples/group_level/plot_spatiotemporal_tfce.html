@@ -1,0 +1,2532 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Plot significance t-map for effect of continuous variable &#8212; mne-limo 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/reset-syntax.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-LIMO</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../whats_new.html">What's new</a></li>
+                <li><a href="../index.html">Examples</a></li>
+                <li><a href="https://github.com/JoseAlanis/mne-stats">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Plot significance t-map for effect of continuous variable</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/limo_examples/group_level/plot_spatiotemporal_tfce.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container content-container">
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-limo-examples-group-level-plot-spatiotemporal-tfce-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="plot-significance-t-map-for-effect-of-continuous-variable">
+<span id="sphx-glr-limo-examples-group-level-plot-spatiotemporal-tfce-py"></span><h1>Plot significance t-map for effect of continuous variable<a class="headerlink" href="#plot-significance-t-map-for-effect-of-continuous-variable" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Jose C. Garcia Alanis &lt;alanis.jcg@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a>
+
+<span class="kn">from</span> <span class="nn">mne.stats.cluster_level</span> <span class="k">import</span> <span class="n">_find_clusters</span><span class="p">,</span><span class="n">_setup_connectivity</span>
+<span class="kn">from</span> <span class="nn">mne.channels</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.channels.find_ch_connectivity.html#mne.channels.find_ch_connectivity" title="View documentation for mne.channels.find_ch_connectivity"><span class="n">find_ch_connectivity</span></a>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="k">import</span> <span class="n">limo</span>
+<span class="kn">from</span> <span class="nn">mne.decoding</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="View documentation for mne.decoding.Vectorizer"><span class="n">Vectorizer</span></a><span class="p">,</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a>
+<span class="kn">from</span> <span class="nn">mne.evoked</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="k">import</span> <a href="http://mne-tools.github.io/stable/generated/mne.combine_evoked.html#mne.combine_evoked" title="View documentation for mne.combine_evoked"><span class="n">combine_evoked</span></a>
+</pre></div>
+</div>
+<p>Here, we’ll import multiple subjects from the LIMO-dataset and compute
+group-level beta-coefficients for a continuous predictor, in addition we show
+how confidence (or significance) levels can be computed for this effects
+using the bootstrap-t technique and spatiotemporal clustering and
+threshold-free cluster enhancement</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># list with subjects ids that should be imported</span>
+<span class="n">subjects</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
+<span class="c1"># create a dictionary containing participants data for easy slicing</span>
+<span class="n">limo_epochs</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">subj</span><span class="p">):</span> <span class="n">limo</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subj</span><span class="p">)</span> <span class="k">for</span> <span class="n">subj</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">}</span>
+
+<span class="c1"># interpolate missing channels</span>
+<span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">limo_epochs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="n">subject</span><span class="o">.</span><span class="n">interpolate_bads</span><span class="p">(</span><span class="n">reset_bads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># only keep eeg channels</span>
+    <span class="n">subject</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>1055 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1052 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1072 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1050 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1118 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1108 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1060 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1030 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1059 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1038 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1029 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+943 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1108 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+998 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1076 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1061 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1098 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+1103 matching events found
+No baseline correction applied
+Adding metadata with 2 columns
+0 projection items activated
+0 bad epochs dropped
+Computing interpolation matrix from 113 sensor positions
+Interpolating 15 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 121 sensor positions
+Interpolating 7 sensors
+Computing interpolation matrix from 119 sensor positions
+Interpolating 9 sensors
+Computing interpolation matrix from 122 sensor positions
+Interpolating 6 sensors
+Computing interpolation matrix from 118 sensor positions
+Interpolating 10 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 121 sensor positions
+Interpolating 7 sensors
+Computing interpolation matrix from 116 sensor positions
+Interpolating 12 sensors
+/home/josealanis/Documents/github/mne-stats/examples/group_level/plot_spatiotemporal_tfce.py:36: RuntimeWarning: No bad channels to interpolate. Doing nothing...
+  subject.interpolate_bads(reset_bads=True)
+Computing interpolation matrix from 115 sensor positions
+Interpolating 13 sensors
+Computing interpolation matrix from 122 sensor positions
+Interpolating 6 sensors
+Computing interpolation matrix from 114 sensor positions
+Interpolating 14 sensors
+Computing interpolation matrix from 117 sensor positions
+Interpolating 11 sensors
+Computing interpolation matrix from 125 sensor positions
+Interpolating 3 sensors
+Computing interpolation matrix from 126 sensor positions
+Interpolating 2 sensors
+Computing interpolation matrix from 122 sensor positions
+Interpolating 6 sensors
+</pre></div>
+</div>
+<p>regression parameters</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># variables to be used in the analysis (i.e., predictors)</span>
+<span class="n">predictors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;intercept&#39;</span><span class="p">,</span> <span class="s1">&#39;face a - face b&#39;</span><span class="p">,</span> <span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span>
+
+<span class="c1"># number of predictors</span>
+<span class="n">n_predictors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">predictors</span><span class="p">)</span>
+
+<span class="c1"># save epochs information (needed for creating a homologous</span>
+<span class="c1"># epochs object containing linear regression result)</span>
+<span class="n">epochs_info</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">info</span>
+
+<span class="c1"># number of channels and number of time points in each epoch</span>
+<span class="c1"># we&#39;ll use this information later to bring the results of the</span>
+<span class="c1"># the linear regression algorithm into an eeg-like format</span>
+<span class="c1"># (i.e., channels x times points)</span>
+<span class="n">n_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">epochs_info</span><span class="p">[</span><span class="s1">&#39;ch_names&#39;</span><span class="p">])</span>
+<span class="n">n_times</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">limo_epochs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># also save times first time-point in data</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">times</span>
+<span class="n">tmin</span> <span class="o">=</span> <span class="n">limo_epochs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">tmin</span>
+</pre></div>
+</div>
+<p>create empty objects  for the storage of results</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># place holders for bootstrap samples</span>
+<span class="n">betas</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">limo_epochs</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                  <span class="n">n_channels</span> <span class="o">*</span> <span class="n">n_times</span><span class="p">))</span>
+
+<span class="c1"># dicts for results evoked-objects</span>
+<span class="n">betas_evoked</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">t_evokeds</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>run regression analysis for each subject</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># loop through subjects, set up and fit linear model</span>
+<span class="k">for</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">subject</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">limo_epochs</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+
+    <span class="c1"># --- 1) create design matrix ---</span>
+    <span class="c1"># use epochs metadata</span>
+    <span class="n">design</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># add intercept (constant) to design matrix</span>
+    <span class="n">design</span> <span class="o">=</span> <span class="n">design</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">intercept</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># effect code contrast for categorical variable (i.e., condition a vs. b)</span>
+    <span class="n">design</span><span class="p">[</span><span class="s1">&#39;face a - face b&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.where" title="View documentation for numpy.where"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><span class="n">design</span><span class="p">[</span><span class="s1">&#39;face&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># order columns of design matrix</span>
+    <span class="n">design</span> <span class="o">=</span> <span class="n">design</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
+
+    <span class="c1"># column of betas array (i.e., predictor) to run bootstrap on</span>
+    <span class="n">pred_col</span> <span class="o">=</span> <span class="n">predictors</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;phase-coherence&#39;</span><span class="p">)</span>
+
+    <span class="c1"># --- 2) vectorize (eeg-channel) data for linear regression analysis ---</span>
+    <span class="c1"># data to be analysed</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+    <span class="c1"># vectorize data across channels</span>
+    <span class="n">Y</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="View documentation for mne.decoding.Vectorizer"><span class="n">Vectorizer</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># --- 3) fit linear model with sklearn&#39;s LinearRegression ---</span>
+    <span class="c1"># we already have an intercept column in the design matrix,</span>
+    <span class="c1"># thus we&#39;ll call LinearRegression with fit_intercept=False</span>
+    <span class="n">linear_model</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression" title="View documentation for sklearn.linear_model.LinearRegression"><span class="n">LinearRegression</span></a><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">linear_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+    <span class="c1"># --- 4) extract the resulting coefficients (i.e., betas) ---</span>
+    <span class="c1"># extract betas</span>
+    <span class="n">coefs</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.decoding.get_coef.html#mne.decoding.get_coef" title="View documentation for mne.decoding.get_coef"><span class="n">get_coef</span></a><span class="p">(</span><span class="n">linear_model</span><span class="p">,</span> <span class="s1">&#39;coef_&#39;</span><span class="p">)</span>
+    <span class="c1"># only keep relevant predictor</span>
+    <span class="n">betas</span><span class="p">[</span><span class="n">iteration</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coefs</span><span class="p">[:,</span> <span class="n">pred_col</span><span class="p">]</span>
+
+    <span class="c1"># the matrix of coefficients has a shape of number of observations in</span>
+    <span class="c1"># the vertorized channel data by number of predictors;</span>
+    <span class="c1"># thus, we can loop through the columns i.e., the predictors)</span>
+    <span class="c1"># of the coefficient matrix and extract coefficients for each predictor</span>
+    <span class="c1"># in order to project them back to a channels x time points space.</span>
+    <span class="n">lm_betas</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="c1"># extract coefficients</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">betas</span><span class="p">[</span><span class="n">iteration</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="c1"># back projection to channels x time points</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+    <span class="c1"># create evoked object containing the back projected coefficients</span>
+    <span class="n">lm_betas</span><span class="p">[</span><span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">epochs_info</span><span class="p">,</span> <span class="n">tmin</span><span class="p">)</span>
+
+    <span class="c1"># save results</span>
+    <span class="n">betas_evoked</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subjects</span><span class="p">[</span><span class="n">iteration</span><span class="p">])]</span> <span class="o">=</span> <span class="n">lm_betas</span>
+
+    <span class="c1"># clean up</span>
+    <span class="k">del</span> <span class="n">linear_model</span>
+</pre></div>
+</div>
+<p>compute mean beta-coefficient for predictor phase-coherence</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># subject ids</span>
+<span class="n">subjects</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subj</span><span class="p">)</span> <span class="k">for</span> <span class="n">subj</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">]</span>
+
+<span class="c1"># extract phase-coherence betas for each subject</span>
+<span class="n">phase_coherence</span> <span class="o">=</span> <span class="p">[</span><span class="n">betas_evoked</span><span class="p">[</span><span class="n">subj</span><span class="p">][</span><span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">subj</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">]</span>
+
+<span class="c1"># average phase-coherence betas</span>
+<span class="n">weights</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.repeat" title="View documentation for numpy.repeat"><span class="n">np</span><span class="o">.</span><span class="n">repeat</span></a><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">phase_coherence</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">phase_coherence</span><span class="p">))</span>
+<span class="n">ga_phase_coherence</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.combine_evoked.html#mne.combine_evoked" title="View documentation for mne.combine_evoked"><span class="n">combine_evoked</span></a><span class="p">(</span><span class="n">phase_coherence</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>compute bootstrap confidence interval for phase-coherence betas and t-values</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set random state for replication</span>
+<span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">random</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.random.html#numpy.random.RandomState" title="View documentation for numpy.random.RandomState"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span></a><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+
+<span class="c1"># number of random samples</span>
+<span class="n">boot</span> <span class="o">=</span> <span class="mi">2000</span>
+
+<span class="c1"># place holders for bootstrap samples</span>
+<span class="n">cluster_H0</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="n">boot</span><span class="p">)</span>
+<span class="n">f_H0</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="n">boot</span><span class="p">)</span>
+
+<span class="c1"># setup connectivity</span>
+<span class="n">n_tests</span> <span class="o">=</span> <span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">connectivity</span><span class="p">,</span> <span class="n">ch_names</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.channels.find_ch_connectivity.html#mne.channels.find_ch_connectivity" title="View documentation for mne.channels.find_ch_connectivity"><span class="n">find_ch_connectivity</span></a><span class="p">(</span><span class="n">epochs_info</span><span class="p">,</span> <span class="n">ch_type</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">)</span>
+<span class="n">connectivity</span> <span class="o">=</span> <span class="n">_setup_connectivity</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">n_tests</span><span class="p">,</span> <span class="n">n_times</span><span class="p">)</span>
+
+<span class="c1"># threshold parameters for clustering</span>
+<span class="n">threshold</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">start</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># run bootstrap for regression coefficients</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">boot</span><span class="p">):</span>
+    <span class="c1"># extract random subjects from overall sample</span>
+    <span class="n">resampled_subjects</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                       <span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                       <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># resampled betas</span>
+    <span class="n">resampled_betas</span> <span class="o">=</span> <span class="n">betas</span><span class="p">[</span><span class="n">resampled_subjects</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># compute standard error of bootstrap sample</span>
+    <span class="n">se</span> <span class="o">=</span> <span class="n">resampled_betas</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.sqrt" title="View documentation for numpy.sqrt"><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span></a><span class="p">(</span><span class="n">resampled_betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># center re-sampled betas around zero</span>
+    <span class="n">resampled_betas</span> <span class="o">-=</span> <span class="n">betas</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># compute t-values for bootstrap sample</span>
+    <span class="n">t_val</span> <span class="o">=</span> <span class="n">resampled_betas</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">se</span>
+    <span class="c1"># transfrom to f-values</span>
+    <span class="n">f_vals</span> <span class="o">=</span> <span class="n">t_val</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="c1"># transpose for clustering</span>
+    <span class="n">f_vals</span> <span class="o">=</span> <span class="n">f_vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+    <span class="n">f_vals</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.transpose" title="View documentation for numpy.transpose"><span class="n">np</span><span class="o">.</span><span class="n">transpose</span></a><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">f_vals</span> <span class="o">=</span> <span class="n">f_vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_times</span> <span class="o">*</span> <span class="n">n_channels</span><span class="p">))</span>
+
+    <span class="c1"># compute clustering on squared t-values (i.e., f-values)</span>
+    <span class="n">clusters</span><span class="p">,</span> <span class="n">cluster_stats</span> <span class="o">=</span> <span class="n">_find_clusters</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span>
+                                             <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+                                             <span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span>
+                                             <span class="n">tail</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># save max cluster mass. Combined, the max cluster mass values from</span>
+    <span class="c1"># computed on the basis of the bootstrap samples provide an approximation</span>
+    <span class="c1"># of the cluster mass distribution under H0</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">clusters</span><span class="p">):</span>
+        <span class="n">cluster_H0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster_stats</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cluster_H0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <a href="https://www.numpy.org/devdocs/reference/constants.html#numpy.nan" title="View documentation for numpy.nan"><span class="n">np</span><span class="o">.</span><span class="n">nan</span></a>
+
+    <span class="c1"># save max f-value</span>
+    <span class="n">f_H0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_vals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;find clusters for bootstrap sample </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Could not find a connectivity matrix for the data. Computing connectivity based on Delaunay triangulations.
+-- number of connected vertices : 128
+find clusters for bootstrap sample 0
+find clusters for bootstrap sample 1
+find clusters for bootstrap sample 2
+find clusters for bootstrap sample 3
+find clusters for bootstrap sample 4
+find clusters for bootstrap sample 5
+find clusters for bootstrap sample 6
+find clusters for bootstrap sample 7
+find clusters for bootstrap sample 8
+find clusters for bootstrap sample 9
+find clusters for bootstrap sample 10
+find clusters for bootstrap sample 11
+find clusters for bootstrap sample 12
+find clusters for bootstrap sample 13
+find clusters for bootstrap sample 14
+find clusters for bootstrap sample 15
+find clusters for bootstrap sample 16
+find clusters for bootstrap sample 17
+find clusters for bootstrap sample 18
+find clusters for bootstrap sample 19
+find clusters for bootstrap sample 20
+find clusters for bootstrap sample 21
+find clusters for bootstrap sample 22
+find clusters for bootstrap sample 23
+find clusters for bootstrap sample 24
+find clusters for bootstrap sample 25
+find clusters for bootstrap sample 26
+find clusters for bootstrap sample 27
+find clusters for bootstrap sample 28
+find clusters for bootstrap sample 29
+find clusters for bootstrap sample 30
+find clusters for bootstrap sample 31
+find clusters for bootstrap sample 32
+find clusters for bootstrap sample 33
+find clusters for bootstrap sample 34
+find clusters for bootstrap sample 35
+find clusters for bootstrap sample 36
+find clusters for bootstrap sample 37
+find clusters for bootstrap sample 38
+find clusters for bootstrap sample 39
+find clusters for bootstrap sample 40
+find clusters for bootstrap sample 41
+find clusters for bootstrap sample 42
+find clusters for bootstrap sample 43
+find clusters for bootstrap sample 44
+find clusters for bootstrap sample 45
+find clusters for bootstrap sample 46
+find clusters for bootstrap sample 47
+find clusters for bootstrap sample 48
+find clusters for bootstrap sample 49
+find clusters for bootstrap sample 50
+find clusters for bootstrap sample 51
+find clusters for bootstrap sample 52
+find clusters for bootstrap sample 53
+find clusters for bootstrap sample 54
+find clusters for bootstrap sample 55
+find clusters for bootstrap sample 56
+find clusters for bootstrap sample 57
+find clusters for bootstrap sample 58
+find clusters for bootstrap sample 59
+find clusters for bootstrap sample 60
+find clusters for bootstrap sample 61
+find clusters for bootstrap sample 62
+find clusters for bootstrap sample 63
+find clusters for bootstrap sample 64
+find clusters for bootstrap sample 65
+find clusters for bootstrap sample 66
+find clusters for bootstrap sample 67
+find clusters for bootstrap sample 68
+find clusters for bootstrap sample 69
+find clusters for bootstrap sample 70
+find clusters for bootstrap sample 71
+find clusters for bootstrap sample 72
+find clusters for bootstrap sample 73
+find clusters for bootstrap sample 74
+find clusters for bootstrap sample 75
+find clusters for bootstrap sample 76
+find clusters for bootstrap sample 77
+find clusters for bootstrap sample 78
+find clusters for bootstrap sample 79
+find clusters for bootstrap sample 80
+find clusters for bootstrap sample 81
+find clusters for bootstrap sample 82
+find clusters for bootstrap sample 83
+find clusters for bootstrap sample 84
+find clusters for bootstrap sample 85
+find clusters for bootstrap sample 86
+find clusters for bootstrap sample 87
+find clusters for bootstrap sample 88
+find clusters for bootstrap sample 89
+find clusters for bootstrap sample 90
+find clusters for bootstrap sample 91
+find clusters for bootstrap sample 92
+find clusters for bootstrap sample 93
+find clusters for bootstrap sample 94
+find clusters for bootstrap sample 95
+find clusters for bootstrap sample 96
+find clusters for bootstrap sample 97
+find clusters for bootstrap sample 98
+find clusters for bootstrap sample 99
+find clusters for bootstrap sample 100
+find clusters for bootstrap sample 101
+find clusters for bootstrap sample 102
+find clusters for bootstrap sample 103
+find clusters for bootstrap sample 104
+find clusters for bootstrap sample 105
+find clusters for bootstrap sample 106
+find clusters for bootstrap sample 107
+find clusters for bootstrap sample 108
+find clusters for bootstrap sample 109
+find clusters for bootstrap sample 110
+find clusters for bootstrap sample 111
+find clusters for bootstrap sample 112
+find clusters for bootstrap sample 113
+find clusters for bootstrap sample 114
+find clusters for bootstrap sample 115
+find clusters for bootstrap sample 116
+find clusters for bootstrap sample 117
+find clusters for bootstrap sample 118
+find clusters for bootstrap sample 119
+find clusters for bootstrap sample 120
+find clusters for bootstrap sample 121
+find clusters for bootstrap sample 122
+find clusters for bootstrap sample 123
+find clusters for bootstrap sample 124
+find clusters for bootstrap sample 125
+find clusters for bootstrap sample 126
+find clusters for bootstrap sample 127
+find clusters for bootstrap sample 128
+find clusters for bootstrap sample 129
+find clusters for bootstrap sample 130
+find clusters for bootstrap sample 131
+find clusters for bootstrap sample 132
+find clusters for bootstrap sample 133
+find clusters for bootstrap sample 134
+find clusters for bootstrap sample 135
+find clusters for bootstrap sample 136
+find clusters for bootstrap sample 137
+find clusters for bootstrap sample 138
+find clusters for bootstrap sample 139
+find clusters for bootstrap sample 140
+find clusters for bootstrap sample 141
+find clusters for bootstrap sample 142
+find clusters for bootstrap sample 143
+find clusters for bootstrap sample 144
+find clusters for bootstrap sample 145
+find clusters for bootstrap sample 146
+find clusters for bootstrap sample 147
+find clusters for bootstrap sample 148
+find clusters for bootstrap sample 149
+find clusters for bootstrap sample 150
+find clusters for bootstrap sample 151
+find clusters for bootstrap sample 152
+find clusters for bootstrap sample 153
+find clusters for bootstrap sample 154
+find clusters for bootstrap sample 155
+find clusters for bootstrap sample 156
+find clusters for bootstrap sample 157
+find clusters for bootstrap sample 158
+find clusters for bootstrap sample 159
+find clusters for bootstrap sample 160
+find clusters for bootstrap sample 161
+find clusters for bootstrap sample 162
+find clusters for bootstrap sample 163
+find clusters for bootstrap sample 164
+find clusters for bootstrap sample 165
+find clusters for bootstrap sample 166
+find clusters for bootstrap sample 167
+find clusters for bootstrap sample 168
+find clusters for bootstrap sample 169
+find clusters for bootstrap sample 170
+find clusters for bootstrap sample 171
+find clusters for bootstrap sample 172
+find clusters for bootstrap sample 173
+find clusters for bootstrap sample 174
+find clusters for bootstrap sample 175
+find clusters for bootstrap sample 176
+find clusters for bootstrap sample 177
+find clusters for bootstrap sample 178
+find clusters for bootstrap sample 179
+find clusters for bootstrap sample 180
+find clusters for bootstrap sample 181
+find clusters for bootstrap sample 182
+find clusters for bootstrap sample 183
+find clusters for bootstrap sample 184
+find clusters for bootstrap sample 185
+find clusters for bootstrap sample 186
+find clusters for bootstrap sample 187
+find clusters for bootstrap sample 188
+find clusters for bootstrap sample 189
+find clusters for bootstrap sample 190
+find clusters for bootstrap sample 191
+find clusters for bootstrap sample 192
+find clusters for bootstrap sample 193
+find clusters for bootstrap sample 194
+find clusters for bootstrap sample 195
+find clusters for bootstrap sample 196
+find clusters for bootstrap sample 197
+find clusters for bootstrap sample 198
+find clusters for bootstrap sample 199
+find clusters for bootstrap sample 200
+find clusters for bootstrap sample 201
+find clusters for bootstrap sample 202
+find clusters for bootstrap sample 203
+find clusters for bootstrap sample 204
+find clusters for bootstrap sample 205
+find clusters for bootstrap sample 206
+find clusters for bootstrap sample 207
+find clusters for bootstrap sample 208
+find clusters for bootstrap sample 209
+find clusters for bootstrap sample 210
+find clusters for bootstrap sample 211
+find clusters for bootstrap sample 212
+find clusters for bootstrap sample 213
+find clusters for bootstrap sample 214
+find clusters for bootstrap sample 215
+find clusters for bootstrap sample 216
+find clusters for bootstrap sample 217
+find clusters for bootstrap sample 218
+find clusters for bootstrap sample 219
+find clusters for bootstrap sample 220
+find clusters for bootstrap sample 221
+find clusters for bootstrap sample 222
+find clusters for bootstrap sample 223
+find clusters for bootstrap sample 224
+find clusters for bootstrap sample 225
+find clusters for bootstrap sample 226
+find clusters for bootstrap sample 227
+find clusters for bootstrap sample 228
+find clusters for bootstrap sample 229
+find clusters for bootstrap sample 230
+find clusters for bootstrap sample 231
+find clusters for bootstrap sample 232
+find clusters for bootstrap sample 233
+find clusters for bootstrap sample 234
+find clusters for bootstrap sample 235
+find clusters for bootstrap sample 236
+find clusters for bootstrap sample 237
+find clusters for bootstrap sample 238
+find clusters for bootstrap sample 239
+find clusters for bootstrap sample 240
+find clusters for bootstrap sample 241
+find clusters for bootstrap sample 242
+find clusters for bootstrap sample 243
+find clusters for bootstrap sample 244
+find clusters for bootstrap sample 245
+find clusters for bootstrap sample 246
+find clusters for bootstrap sample 247
+find clusters for bootstrap sample 248
+find clusters for bootstrap sample 249
+find clusters for bootstrap sample 250
+find clusters for bootstrap sample 251
+find clusters for bootstrap sample 252
+find clusters for bootstrap sample 253
+find clusters for bootstrap sample 254
+find clusters for bootstrap sample 255
+find clusters for bootstrap sample 256
+find clusters for bootstrap sample 257
+find clusters for bootstrap sample 258
+find clusters for bootstrap sample 259
+find clusters for bootstrap sample 260
+find clusters for bootstrap sample 261
+find clusters for bootstrap sample 262
+find clusters for bootstrap sample 263
+find clusters for bootstrap sample 264
+find clusters for bootstrap sample 265
+find clusters for bootstrap sample 266
+find clusters for bootstrap sample 267
+find clusters for bootstrap sample 268
+find clusters for bootstrap sample 269
+find clusters for bootstrap sample 270
+find clusters for bootstrap sample 271
+find clusters for bootstrap sample 272
+find clusters for bootstrap sample 273
+find clusters for bootstrap sample 274
+find clusters for bootstrap sample 275
+find clusters for bootstrap sample 276
+find clusters for bootstrap sample 277
+find clusters for bootstrap sample 278
+find clusters for bootstrap sample 279
+find clusters for bootstrap sample 280
+find clusters for bootstrap sample 281
+find clusters for bootstrap sample 282
+find clusters for bootstrap sample 283
+find clusters for bootstrap sample 284
+find clusters for bootstrap sample 285
+find clusters for bootstrap sample 286
+find clusters for bootstrap sample 287
+find clusters for bootstrap sample 288
+find clusters for bootstrap sample 289
+find clusters for bootstrap sample 290
+find clusters for bootstrap sample 291
+find clusters for bootstrap sample 292
+find clusters for bootstrap sample 293
+find clusters for bootstrap sample 294
+find clusters for bootstrap sample 295
+find clusters for bootstrap sample 296
+find clusters for bootstrap sample 297
+find clusters for bootstrap sample 298
+find clusters for bootstrap sample 299
+find clusters for bootstrap sample 300
+find clusters for bootstrap sample 301
+find clusters for bootstrap sample 302
+find clusters for bootstrap sample 303
+find clusters for bootstrap sample 304
+find clusters for bootstrap sample 305
+find clusters for bootstrap sample 306
+find clusters for bootstrap sample 307
+find clusters for bootstrap sample 308
+find clusters for bootstrap sample 309
+find clusters for bootstrap sample 310
+find clusters for bootstrap sample 311
+find clusters for bootstrap sample 312
+find clusters for bootstrap sample 313
+find clusters for bootstrap sample 314
+find clusters for bootstrap sample 315
+find clusters for bootstrap sample 316
+find clusters for bootstrap sample 317
+find clusters for bootstrap sample 318
+find clusters for bootstrap sample 319
+find clusters for bootstrap sample 320
+find clusters for bootstrap sample 321
+find clusters for bootstrap sample 322
+find clusters for bootstrap sample 323
+find clusters for bootstrap sample 324
+find clusters for bootstrap sample 325
+find clusters for bootstrap sample 326
+find clusters for bootstrap sample 327
+find clusters for bootstrap sample 328
+find clusters for bootstrap sample 329
+find clusters for bootstrap sample 330
+find clusters for bootstrap sample 331
+find clusters for bootstrap sample 332
+find clusters for bootstrap sample 333
+find clusters for bootstrap sample 334
+find clusters for bootstrap sample 335
+find clusters for bootstrap sample 336
+find clusters for bootstrap sample 337
+find clusters for bootstrap sample 338
+find clusters for bootstrap sample 339
+find clusters for bootstrap sample 340
+find clusters for bootstrap sample 341
+find clusters for bootstrap sample 342
+find clusters for bootstrap sample 343
+find clusters for bootstrap sample 344
+find clusters for bootstrap sample 345
+find clusters for bootstrap sample 346
+find clusters for bootstrap sample 347
+find clusters for bootstrap sample 348
+find clusters for bootstrap sample 349
+find clusters for bootstrap sample 350
+find clusters for bootstrap sample 351
+find clusters for bootstrap sample 352
+find clusters for bootstrap sample 353
+find clusters for bootstrap sample 354
+find clusters for bootstrap sample 355
+find clusters for bootstrap sample 356
+find clusters for bootstrap sample 357
+find clusters for bootstrap sample 358
+find clusters for bootstrap sample 359
+find clusters for bootstrap sample 360
+find clusters for bootstrap sample 361
+find clusters for bootstrap sample 362
+find clusters for bootstrap sample 363
+find clusters for bootstrap sample 364
+find clusters for bootstrap sample 365
+find clusters for bootstrap sample 366
+find clusters for bootstrap sample 367
+find clusters for bootstrap sample 368
+find clusters for bootstrap sample 369
+find clusters for bootstrap sample 370
+find clusters for bootstrap sample 371
+find clusters for bootstrap sample 372
+find clusters for bootstrap sample 373
+find clusters for bootstrap sample 374
+find clusters for bootstrap sample 375
+find clusters for bootstrap sample 376
+find clusters for bootstrap sample 377
+find clusters for bootstrap sample 378
+find clusters for bootstrap sample 379
+find clusters for bootstrap sample 380
+find clusters for bootstrap sample 381
+find clusters for bootstrap sample 382
+find clusters for bootstrap sample 383
+find clusters for bootstrap sample 384
+find clusters for bootstrap sample 385
+find clusters for bootstrap sample 386
+find clusters for bootstrap sample 387
+find clusters for bootstrap sample 388
+find clusters for bootstrap sample 389
+find clusters for bootstrap sample 390
+find clusters for bootstrap sample 391
+find clusters for bootstrap sample 392
+find clusters for bootstrap sample 393
+find clusters for bootstrap sample 394
+find clusters for bootstrap sample 395
+find clusters for bootstrap sample 396
+find clusters for bootstrap sample 397
+find clusters for bootstrap sample 398
+find clusters for bootstrap sample 399
+find clusters for bootstrap sample 400
+find clusters for bootstrap sample 401
+find clusters for bootstrap sample 402
+find clusters for bootstrap sample 403
+find clusters for bootstrap sample 404
+find clusters for bootstrap sample 405
+find clusters for bootstrap sample 406
+find clusters for bootstrap sample 407
+find clusters for bootstrap sample 408
+find clusters for bootstrap sample 409
+find clusters for bootstrap sample 410
+find clusters for bootstrap sample 411
+find clusters for bootstrap sample 412
+find clusters for bootstrap sample 413
+find clusters for bootstrap sample 414
+find clusters for bootstrap sample 415
+find clusters for bootstrap sample 416
+find clusters for bootstrap sample 417
+find clusters for bootstrap sample 418
+find clusters for bootstrap sample 419
+find clusters for bootstrap sample 420
+find clusters for bootstrap sample 421
+find clusters for bootstrap sample 422
+find clusters for bootstrap sample 423
+find clusters for bootstrap sample 424
+find clusters for bootstrap sample 425
+find clusters for bootstrap sample 426
+find clusters for bootstrap sample 427
+find clusters for bootstrap sample 428
+find clusters for bootstrap sample 429
+find clusters for bootstrap sample 430
+find clusters for bootstrap sample 431
+find clusters for bootstrap sample 432
+find clusters for bootstrap sample 433
+find clusters for bootstrap sample 434
+find clusters for bootstrap sample 435
+find clusters for bootstrap sample 436
+find clusters for bootstrap sample 437
+find clusters for bootstrap sample 438
+find clusters for bootstrap sample 439
+find clusters for bootstrap sample 440
+find clusters for bootstrap sample 441
+find clusters for bootstrap sample 442
+find clusters for bootstrap sample 443
+find clusters for bootstrap sample 444
+find clusters for bootstrap sample 445
+find clusters for bootstrap sample 446
+find clusters for bootstrap sample 447
+find clusters for bootstrap sample 448
+find clusters for bootstrap sample 449
+find clusters for bootstrap sample 450
+find clusters for bootstrap sample 451
+find clusters for bootstrap sample 452
+find clusters for bootstrap sample 453
+find clusters for bootstrap sample 454
+find clusters for bootstrap sample 455
+find clusters for bootstrap sample 456
+find clusters for bootstrap sample 457
+find clusters for bootstrap sample 458
+find clusters for bootstrap sample 459
+find clusters for bootstrap sample 460
+find clusters for bootstrap sample 461
+find clusters for bootstrap sample 462
+find clusters for bootstrap sample 463
+find clusters for bootstrap sample 464
+find clusters for bootstrap sample 465
+find clusters for bootstrap sample 466
+find clusters for bootstrap sample 467
+find clusters for bootstrap sample 468
+find clusters for bootstrap sample 469
+find clusters for bootstrap sample 470
+find clusters for bootstrap sample 471
+find clusters for bootstrap sample 472
+find clusters for bootstrap sample 473
+find clusters for bootstrap sample 474
+find clusters for bootstrap sample 475
+find clusters for bootstrap sample 476
+find clusters for bootstrap sample 477
+find clusters for bootstrap sample 478
+find clusters for bootstrap sample 479
+find clusters for bootstrap sample 480
+find clusters for bootstrap sample 481
+find clusters for bootstrap sample 482
+find clusters for bootstrap sample 483
+find clusters for bootstrap sample 484
+find clusters for bootstrap sample 485
+find clusters for bootstrap sample 486
+find clusters for bootstrap sample 487
+find clusters for bootstrap sample 488
+find clusters for bootstrap sample 489
+find clusters for bootstrap sample 490
+find clusters for bootstrap sample 491
+find clusters for bootstrap sample 492
+find clusters for bootstrap sample 493
+find clusters for bootstrap sample 494
+find clusters for bootstrap sample 495
+find clusters for bootstrap sample 496
+find clusters for bootstrap sample 497
+find clusters for bootstrap sample 498
+find clusters for bootstrap sample 499
+find clusters for bootstrap sample 500
+find clusters for bootstrap sample 501
+find clusters for bootstrap sample 502
+find clusters for bootstrap sample 503
+find clusters for bootstrap sample 504
+find clusters for bootstrap sample 505
+find clusters for bootstrap sample 506
+find clusters for bootstrap sample 507
+find clusters for bootstrap sample 508
+find clusters for bootstrap sample 509
+find clusters for bootstrap sample 510
+find clusters for bootstrap sample 511
+find clusters for bootstrap sample 512
+find clusters for bootstrap sample 513
+find clusters for bootstrap sample 514
+find clusters for bootstrap sample 515
+find clusters for bootstrap sample 516
+find clusters for bootstrap sample 517
+find clusters for bootstrap sample 518
+find clusters for bootstrap sample 519
+find clusters for bootstrap sample 520
+find clusters for bootstrap sample 521
+find clusters for bootstrap sample 522
+find clusters for bootstrap sample 523
+find clusters for bootstrap sample 524
+find clusters for bootstrap sample 525
+find clusters for bootstrap sample 526
+find clusters for bootstrap sample 527
+find clusters for bootstrap sample 528
+find clusters for bootstrap sample 529
+find clusters for bootstrap sample 530
+find clusters for bootstrap sample 531
+find clusters for bootstrap sample 532
+find clusters for bootstrap sample 533
+find clusters for bootstrap sample 534
+find clusters for bootstrap sample 535
+find clusters for bootstrap sample 536
+find clusters for bootstrap sample 537
+find clusters for bootstrap sample 538
+find clusters for bootstrap sample 539
+find clusters for bootstrap sample 540
+find clusters for bootstrap sample 541
+find clusters for bootstrap sample 542
+find clusters for bootstrap sample 543
+find clusters for bootstrap sample 544
+find clusters for bootstrap sample 545
+find clusters for bootstrap sample 546
+find clusters for bootstrap sample 547
+find clusters for bootstrap sample 548
+find clusters for bootstrap sample 549
+find clusters for bootstrap sample 550
+find clusters for bootstrap sample 551
+find clusters for bootstrap sample 552
+find clusters for bootstrap sample 553
+find clusters for bootstrap sample 554
+find clusters for bootstrap sample 555
+find clusters for bootstrap sample 556
+find clusters for bootstrap sample 557
+find clusters for bootstrap sample 558
+find clusters for bootstrap sample 559
+find clusters for bootstrap sample 560
+find clusters for bootstrap sample 561
+find clusters for bootstrap sample 562
+find clusters for bootstrap sample 563
+find clusters for bootstrap sample 564
+find clusters for bootstrap sample 565
+find clusters for bootstrap sample 566
+find clusters for bootstrap sample 567
+find clusters for bootstrap sample 568
+find clusters for bootstrap sample 569
+find clusters for bootstrap sample 570
+find clusters for bootstrap sample 571
+find clusters for bootstrap sample 572
+find clusters for bootstrap sample 573
+find clusters for bootstrap sample 574
+find clusters for bootstrap sample 575
+find clusters for bootstrap sample 576
+find clusters for bootstrap sample 577
+find clusters for bootstrap sample 578
+find clusters for bootstrap sample 579
+find clusters for bootstrap sample 580
+find clusters for bootstrap sample 581
+find clusters for bootstrap sample 582
+find clusters for bootstrap sample 583
+find clusters for bootstrap sample 584
+find clusters for bootstrap sample 585
+find clusters for bootstrap sample 586
+find clusters for bootstrap sample 587
+find clusters for bootstrap sample 588
+find clusters for bootstrap sample 589
+find clusters for bootstrap sample 590
+find clusters for bootstrap sample 591
+find clusters for bootstrap sample 592
+find clusters for bootstrap sample 593
+find clusters for bootstrap sample 594
+find clusters for bootstrap sample 595
+find clusters for bootstrap sample 596
+find clusters for bootstrap sample 597
+find clusters for bootstrap sample 598
+find clusters for bootstrap sample 599
+find clusters for bootstrap sample 600
+find clusters for bootstrap sample 601
+find clusters for bootstrap sample 602
+find clusters for bootstrap sample 603
+find clusters for bootstrap sample 604
+find clusters for bootstrap sample 605
+find clusters for bootstrap sample 606
+find clusters for bootstrap sample 607
+find clusters for bootstrap sample 608
+find clusters for bootstrap sample 609
+find clusters for bootstrap sample 610
+find clusters for bootstrap sample 611
+find clusters for bootstrap sample 612
+find clusters for bootstrap sample 613
+find clusters for bootstrap sample 614
+find clusters for bootstrap sample 615
+find clusters for bootstrap sample 616
+find clusters for bootstrap sample 617
+find clusters for bootstrap sample 618
+find clusters for bootstrap sample 619
+find clusters for bootstrap sample 620
+find clusters for bootstrap sample 621
+find clusters for bootstrap sample 622
+find clusters for bootstrap sample 623
+find clusters for bootstrap sample 624
+find clusters for bootstrap sample 625
+find clusters for bootstrap sample 626
+find clusters for bootstrap sample 627
+find clusters for bootstrap sample 628
+find clusters for bootstrap sample 629
+find clusters for bootstrap sample 630
+find clusters for bootstrap sample 631
+find clusters for bootstrap sample 632
+find clusters for bootstrap sample 633
+find clusters for bootstrap sample 634
+find clusters for bootstrap sample 635
+find clusters for bootstrap sample 636
+find clusters for bootstrap sample 637
+find clusters for bootstrap sample 638
+find clusters for bootstrap sample 639
+find clusters for bootstrap sample 640
+find clusters for bootstrap sample 641
+find clusters for bootstrap sample 642
+find clusters for bootstrap sample 643
+find clusters for bootstrap sample 644
+find clusters for bootstrap sample 645
+find clusters for bootstrap sample 646
+find clusters for bootstrap sample 647
+find clusters for bootstrap sample 648
+find clusters for bootstrap sample 649
+find clusters for bootstrap sample 650
+find clusters for bootstrap sample 651
+find clusters for bootstrap sample 652
+find clusters for bootstrap sample 653
+find clusters for bootstrap sample 654
+find clusters for bootstrap sample 655
+find clusters for bootstrap sample 656
+find clusters for bootstrap sample 657
+find clusters for bootstrap sample 658
+find clusters for bootstrap sample 659
+find clusters for bootstrap sample 660
+find clusters for bootstrap sample 661
+find clusters for bootstrap sample 662
+find clusters for bootstrap sample 663
+find clusters for bootstrap sample 664
+find clusters for bootstrap sample 665
+find clusters for bootstrap sample 666
+find clusters for bootstrap sample 667
+find clusters for bootstrap sample 668
+find clusters for bootstrap sample 669
+find clusters for bootstrap sample 670
+find clusters for bootstrap sample 671
+find clusters for bootstrap sample 672
+find clusters for bootstrap sample 673
+find clusters for bootstrap sample 674
+find clusters for bootstrap sample 675
+find clusters for bootstrap sample 676
+find clusters for bootstrap sample 677
+find clusters for bootstrap sample 678
+find clusters for bootstrap sample 679
+find clusters for bootstrap sample 680
+find clusters for bootstrap sample 681
+find clusters for bootstrap sample 682
+find clusters for bootstrap sample 683
+find clusters for bootstrap sample 684
+find clusters for bootstrap sample 685
+find clusters for bootstrap sample 686
+find clusters for bootstrap sample 687
+find clusters for bootstrap sample 688
+find clusters for bootstrap sample 689
+find clusters for bootstrap sample 690
+find clusters for bootstrap sample 691
+find clusters for bootstrap sample 692
+find clusters for bootstrap sample 693
+find clusters for bootstrap sample 694
+find clusters for bootstrap sample 695
+find clusters for bootstrap sample 696
+find clusters for bootstrap sample 697
+find clusters for bootstrap sample 698
+find clusters for bootstrap sample 699
+find clusters for bootstrap sample 700
+find clusters for bootstrap sample 701
+find clusters for bootstrap sample 702
+find clusters for bootstrap sample 703
+find clusters for bootstrap sample 704
+find clusters for bootstrap sample 705
+find clusters for bootstrap sample 706
+find clusters for bootstrap sample 707
+find clusters for bootstrap sample 708
+find clusters for bootstrap sample 709
+find clusters for bootstrap sample 710
+find clusters for bootstrap sample 711
+find clusters for bootstrap sample 712
+find clusters for bootstrap sample 713
+find clusters for bootstrap sample 714
+find clusters for bootstrap sample 715
+find clusters for bootstrap sample 716
+find clusters for bootstrap sample 717
+find clusters for bootstrap sample 718
+find clusters for bootstrap sample 719
+find clusters for bootstrap sample 720
+find clusters for bootstrap sample 721
+find clusters for bootstrap sample 722
+find clusters for bootstrap sample 723
+find clusters for bootstrap sample 724
+find clusters for bootstrap sample 725
+find clusters for bootstrap sample 726
+find clusters for bootstrap sample 727
+find clusters for bootstrap sample 728
+find clusters for bootstrap sample 729
+find clusters for bootstrap sample 730
+find clusters for bootstrap sample 731
+find clusters for bootstrap sample 732
+find clusters for bootstrap sample 733
+find clusters for bootstrap sample 734
+find clusters for bootstrap sample 735
+find clusters for bootstrap sample 736
+find clusters for bootstrap sample 737
+find clusters for bootstrap sample 738
+find clusters for bootstrap sample 739
+find clusters for bootstrap sample 740
+find clusters for bootstrap sample 741
+find clusters for bootstrap sample 742
+find clusters for bootstrap sample 743
+find clusters for bootstrap sample 744
+find clusters for bootstrap sample 745
+find clusters for bootstrap sample 746
+find clusters for bootstrap sample 747
+find clusters for bootstrap sample 748
+find clusters for bootstrap sample 749
+find clusters for bootstrap sample 750
+find clusters for bootstrap sample 751
+find clusters for bootstrap sample 752
+find clusters for bootstrap sample 753
+find clusters for bootstrap sample 754
+find clusters for bootstrap sample 755
+find clusters for bootstrap sample 756
+find clusters for bootstrap sample 757
+find clusters for bootstrap sample 758
+find clusters for bootstrap sample 759
+find clusters for bootstrap sample 760
+find clusters for bootstrap sample 761
+find clusters for bootstrap sample 762
+find clusters for bootstrap sample 763
+find clusters for bootstrap sample 764
+find clusters for bootstrap sample 765
+find clusters for bootstrap sample 766
+find clusters for bootstrap sample 767
+find clusters for bootstrap sample 768
+find clusters for bootstrap sample 769
+find clusters for bootstrap sample 770
+find clusters for bootstrap sample 771
+find clusters for bootstrap sample 772
+find clusters for bootstrap sample 773
+find clusters for bootstrap sample 774
+find clusters for bootstrap sample 775
+find clusters for bootstrap sample 776
+find clusters for bootstrap sample 777
+find clusters for bootstrap sample 778
+find clusters for bootstrap sample 779
+find clusters for bootstrap sample 780
+find clusters for bootstrap sample 781
+find clusters for bootstrap sample 782
+find clusters for bootstrap sample 783
+find clusters for bootstrap sample 784
+find clusters for bootstrap sample 785
+find clusters for bootstrap sample 786
+find clusters for bootstrap sample 787
+find clusters for bootstrap sample 788
+find clusters for bootstrap sample 789
+find clusters for bootstrap sample 790
+find clusters for bootstrap sample 791
+find clusters for bootstrap sample 792
+find clusters for bootstrap sample 793
+find clusters for bootstrap sample 794
+find clusters for bootstrap sample 795
+find clusters for bootstrap sample 796
+find clusters for bootstrap sample 797
+find clusters for bootstrap sample 798
+find clusters for bootstrap sample 799
+find clusters for bootstrap sample 800
+find clusters for bootstrap sample 801
+find clusters for bootstrap sample 802
+find clusters for bootstrap sample 803
+find clusters for bootstrap sample 804
+find clusters for bootstrap sample 805
+find clusters for bootstrap sample 806
+find clusters for bootstrap sample 807
+find clusters for bootstrap sample 808
+find clusters for bootstrap sample 809
+find clusters for bootstrap sample 810
+find clusters for bootstrap sample 811
+find clusters for bootstrap sample 812
+find clusters for bootstrap sample 813
+find clusters for bootstrap sample 814
+find clusters for bootstrap sample 815
+find clusters for bootstrap sample 816
+find clusters for bootstrap sample 817
+find clusters for bootstrap sample 818
+find clusters for bootstrap sample 819
+find clusters for bootstrap sample 820
+find clusters for bootstrap sample 821
+find clusters for bootstrap sample 822
+find clusters for bootstrap sample 823
+find clusters for bootstrap sample 824
+find clusters for bootstrap sample 825
+find clusters for bootstrap sample 826
+find clusters for bootstrap sample 827
+find clusters for bootstrap sample 828
+find clusters for bootstrap sample 829
+find clusters for bootstrap sample 830
+find clusters for bootstrap sample 831
+find clusters for bootstrap sample 832
+find clusters for bootstrap sample 833
+find clusters for bootstrap sample 834
+find clusters for bootstrap sample 835
+find clusters for bootstrap sample 836
+find clusters for bootstrap sample 837
+find clusters for bootstrap sample 838
+find clusters for bootstrap sample 839
+find clusters for bootstrap sample 840
+find clusters for bootstrap sample 841
+find clusters for bootstrap sample 842
+find clusters for bootstrap sample 843
+find clusters for bootstrap sample 844
+find clusters for bootstrap sample 845
+find clusters for bootstrap sample 846
+find clusters for bootstrap sample 847
+find clusters for bootstrap sample 848
+find clusters for bootstrap sample 849
+find clusters for bootstrap sample 850
+find clusters for bootstrap sample 851
+find clusters for bootstrap sample 852
+find clusters for bootstrap sample 853
+find clusters for bootstrap sample 854
+find clusters for bootstrap sample 855
+find clusters for bootstrap sample 856
+find clusters for bootstrap sample 857
+find clusters for bootstrap sample 858
+find clusters for bootstrap sample 859
+find clusters for bootstrap sample 860
+find clusters for bootstrap sample 861
+find clusters for bootstrap sample 862
+find clusters for bootstrap sample 863
+find clusters for bootstrap sample 864
+find clusters for bootstrap sample 865
+find clusters for bootstrap sample 866
+find clusters for bootstrap sample 867
+find clusters for bootstrap sample 868
+find clusters for bootstrap sample 869
+find clusters for bootstrap sample 870
+find clusters for bootstrap sample 871
+find clusters for bootstrap sample 872
+find clusters for bootstrap sample 873
+find clusters for bootstrap sample 874
+find clusters for bootstrap sample 875
+find clusters for bootstrap sample 876
+find clusters for bootstrap sample 877
+find clusters for bootstrap sample 878
+find clusters for bootstrap sample 879
+find clusters for bootstrap sample 880
+find clusters for bootstrap sample 881
+find clusters for bootstrap sample 882
+find clusters for bootstrap sample 883
+find clusters for bootstrap sample 884
+find clusters for bootstrap sample 885
+find clusters for bootstrap sample 886
+find clusters for bootstrap sample 887
+find clusters for bootstrap sample 888
+find clusters for bootstrap sample 889
+find clusters for bootstrap sample 890
+find clusters for bootstrap sample 891
+find clusters for bootstrap sample 892
+find clusters for bootstrap sample 893
+find clusters for bootstrap sample 894
+find clusters for bootstrap sample 895
+find clusters for bootstrap sample 896
+find clusters for bootstrap sample 897
+find clusters for bootstrap sample 898
+find clusters for bootstrap sample 899
+find clusters for bootstrap sample 900
+find clusters for bootstrap sample 901
+find clusters for bootstrap sample 902
+find clusters for bootstrap sample 903
+find clusters for bootstrap sample 904
+find clusters for bootstrap sample 905
+find clusters for bootstrap sample 906
+find clusters for bootstrap sample 907
+find clusters for bootstrap sample 908
+find clusters for bootstrap sample 909
+find clusters for bootstrap sample 910
+find clusters for bootstrap sample 911
+find clusters for bootstrap sample 912
+find clusters for bootstrap sample 913
+find clusters for bootstrap sample 914
+find clusters for bootstrap sample 915
+find clusters for bootstrap sample 916
+find clusters for bootstrap sample 917
+find clusters for bootstrap sample 918
+find clusters for bootstrap sample 919
+find clusters for bootstrap sample 920
+find clusters for bootstrap sample 921
+find clusters for bootstrap sample 922
+find clusters for bootstrap sample 923
+find clusters for bootstrap sample 924
+find clusters for bootstrap sample 925
+find clusters for bootstrap sample 926
+find clusters for bootstrap sample 927
+find clusters for bootstrap sample 928
+find clusters for bootstrap sample 929
+find clusters for bootstrap sample 930
+find clusters for bootstrap sample 931
+find clusters for bootstrap sample 932
+find clusters for bootstrap sample 933
+find clusters for bootstrap sample 934
+find clusters for bootstrap sample 935
+find clusters for bootstrap sample 936
+find clusters for bootstrap sample 937
+find clusters for bootstrap sample 938
+find clusters for bootstrap sample 939
+find clusters for bootstrap sample 940
+find clusters for bootstrap sample 941
+find clusters for bootstrap sample 942
+find clusters for bootstrap sample 943
+find clusters for bootstrap sample 944
+find clusters for bootstrap sample 945
+find clusters for bootstrap sample 946
+find clusters for bootstrap sample 947
+find clusters for bootstrap sample 948
+find clusters for bootstrap sample 949
+find clusters for bootstrap sample 950
+find clusters for bootstrap sample 951
+find clusters for bootstrap sample 952
+find clusters for bootstrap sample 953
+find clusters for bootstrap sample 954
+find clusters for bootstrap sample 955
+find clusters for bootstrap sample 956
+find clusters for bootstrap sample 957
+find clusters for bootstrap sample 958
+find clusters for bootstrap sample 959
+find clusters for bootstrap sample 960
+find clusters for bootstrap sample 961
+find clusters for bootstrap sample 962
+find clusters for bootstrap sample 963
+find clusters for bootstrap sample 964
+find clusters for bootstrap sample 965
+find clusters for bootstrap sample 966
+find clusters for bootstrap sample 967
+find clusters for bootstrap sample 968
+find clusters for bootstrap sample 969
+find clusters for bootstrap sample 970
+find clusters for bootstrap sample 971
+find clusters for bootstrap sample 972
+find clusters for bootstrap sample 973
+find clusters for bootstrap sample 974
+find clusters for bootstrap sample 975
+find clusters for bootstrap sample 976
+find clusters for bootstrap sample 977
+find clusters for bootstrap sample 978
+find clusters for bootstrap sample 979
+find clusters for bootstrap sample 980
+find clusters for bootstrap sample 981
+find clusters for bootstrap sample 982
+find clusters for bootstrap sample 983
+find clusters for bootstrap sample 984
+find clusters for bootstrap sample 985
+find clusters for bootstrap sample 986
+find clusters for bootstrap sample 987
+find clusters for bootstrap sample 988
+find clusters for bootstrap sample 989
+find clusters for bootstrap sample 990
+find clusters for bootstrap sample 991
+find clusters for bootstrap sample 992
+find clusters for bootstrap sample 993
+find clusters for bootstrap sample 994
+find clusters for bootstrap sample 995
+find clusters for bootstrap sample 996
+find clusters for bootstrap sample 997
+find clusters for bootstrap sample 998
+find clusters for bootstrap sample 999
+find clusters for bootstrap sample 1000
+find clusters for bootstrap sample 1001
+find clusters for bootstrap sample 1002
+find clusters for bootstrap sample 1003
+find clusters for bootstrap sample 1004
+find clusters for bootstrap sample 1005
+find clusters for bootstrap sample 1006
+find clusters for bootstrap sample 1007
+find clusters for bootstrap sample 1008
+find clusters for bootstrap sample 1009
+find clusters for bootstrap sample 1010
+find clusters for bootstrap sample 1011
+find clusters for bootstrap sample 1012
+find clusters for bootstrap sample 1013
+find clusters for bootstrap sample 1014
+find clusters for bootstrap sample 1015
+find clusters for bootstrap sample 1016
+find clusters for bootstrap sample 1017
+find clusters for bootstrap sample 1018
+find clusters for bootstrap sample 1019
+find clusters for bootstrap sample 1020
+find clusters for bootstrap sample 1021
+find clusters for bootstrap sample 1022
+find clusters for bootstrap sample 1023
+find clusters for bootstrap sample 1024
+find clusters for bootstrap sample 1025
+find clusters for bootstrap sample 1026
+find clusters for bootstrap sample 1027
+find clusters for bootstrap sample 1028
+find clusters for bootstrap sample 1029
+find clusters for bootstrap sample 1030
+find clusters for bootstrap sample 1031
+find clusters for bootstrap sample 1032
+find clusters for bootstrap sample 1033
+find clusters for bootstrap sample 1034
+find clusters for bootstrap sample 1035
+find clusters for bootstrap sample 1036
+find clusters for bootstrap sample 1037
+find clusters for bootstrap sample 1038
+find clusters for bootstrap sample 1039
+find clusters for bootstrap sample 1040
+find clusters for bootstrap sample 1041
+find clusters for bootstrap sample 1042
+find clusters for bootstrap sample 1043
+find clusters for bootstrap sample 1044
+find clusters for bootstrap sample 1045
+find clusters for bootstrap sample 1046
+find clusters for bootstrap sample 1047
+find clusters for bootstrap sample 1048
+find clusters for bootstrap sample 1049
+find clusters for bootstrap sample 1050
+find clusters for bootstrap sample 1051
+find clusters for bootstrap sample 1052
+find clusters for bootstrap sample 1053
+find clusters for bootstrap sample 1054
+find clusters for bootstrap sample 1055
+find clusters for bootstrap sample 1056
+find clusters for bootstrap sample 1057
+find clusters for bootstrap sample 1058
+find clusters for bootstrap sample 1059
+find clusters for bootstrap sample 1060
+find clusters for bootstrap sample 1061
+find clusters for bootstrap sample 1062
+find clusters for bootstrap sample 1063
+find clusters for bootstrap sample 1064
+find clusters for bootstrap sample 1065
+find clusters for bootstrap sample 1066
+find clusters for bootstrap sample 1067
+find clusters for bootstrap sample 1068
+find clusters for bootstrap sample 1069
+find clusters for bootstrap sample 1070
+find clusters for bootstrap sample 1071
+find clusters for bootstrap sample 1072
+find clusters for bootstrap sample 1073
+find clusters for bootstrap sample 1074
+find clusters for bootstrap sample 1075
+find clusters for bootstrap sample 1076
+find clusters for bootstrap sample 1077
+find clusters for bootstrap sample 1078
+find clusters for bootstrap sample 1079
+find clusters for bootstrap sample 1080
+find clusters for bootstrap sample 1081
+find clusters for bootstrap sample 1082
+find clusters for bootstrap sample 1083
+find clusters for bootstrap sample 1084
+find clusters for bootstrap sample 1085
+find clusters for bootstrap sample 1086
+find clusters for bootstrap sample 1087
+find clusters for bootstrap sample 1088
+find clusters for bootstrap sample 1089
+find clusters for bootstrap sample 1090
+find clusters for bootstrap sample 1091
+find clusters for bootstrap sample 1092
+find clusters for bootstrap sample 1093
+find clusters for bootstrap sample 1094
+find clusters for bootstrap sample 1095
+find clusters for bootstrap sample 1096
+find clusters for bootstrap sample 1097
+find clusters for bootstrap sample 1098
+find clusters for bootstrap sample 1099
+find clusters for bootstrap sample 1100
+find clusters for bootstrap sample 1101
+find clusters for bootstrap sample 1102
+find clusters for bootstrap sample 1103
+find clusters for bootstrap sample 1104
+find clusters for bootstrap sample 1105
+find clusters for bootstrap sample 1106
+find clusters for bootstrap sample 1107
+find clusters for bootstrap sample 1108
+find clusters for bootstrap sample 1109
+find clusters for bootstrap sample 1110
+find clusters for bootstrap sample 1111
+find clusters for bootstrap sample 1112
+find clusters for bootstrap sample 1113
+find clusters for bootstrap sample 1114
+find clusters for bootstrap sample 1115
+find clusters for bootstrap sample 1116
+find clusters for bootstrap sample 1117
+find clusters for bootstrap sample 1118
+find clusters for bootstrap sample 1119
+find clusters for bootstrap sample 1120
+find clusters for bootstrap sample 1121
+find clusters for bootstrap sample 1122
+find clusters for bootstrap sample 1123
+find clusters for bootstrap sample 1124
+find clusters for bootstrap sample 1125
+find clusters for bootstrap sample 1126
+find clusters for bootstrap sample 1127
+find clusters for bootstrap sample 1128
+find clusters for bootstrap sample 1129
+find clusters for bootstrap sample 1130
+find clusters for bootstrap sample 1131
+find clusters for bootstrap sample 1132
+find clusters for bootstrap sample 1133
+find clusters for bootstrap sample 1134
+find clusters for bootstrap sample 1135
+find clusters for bootstrap sample 1136
+find clusters for bootstrap sample 1137
+find clusters for bootstrap sample 1138
+find clusters for bootstrap sample 1139
+find clusters for bootstrap sample 1140
+find clusters for bootstrap sample 1141
+find clusters for bootstrap sample 1142
+find clusters for bootstrap sample 1143
+find clusters for bootstrap sample 1144
+find clusters for bootstrap sample 1145
+find clusters for bootstrap sample 1146
+find clusters for bootstrap sample 1147
+find clusters for bootstrap sample 1148
+find clusters for bootstrap sample 1149
+find clusters for bootstrap sample 1150
+find clusters for bootstrap sample 1151
+find clusters for bootstrap sample 1152
+find clusters for bootstrap sample 1153
+find clusters for bootstrap sample 1154
+find clusters for bootstrap sample 1155
+find clusters for bootstrap sample 1156
+find clusters for bootstrap sample 1157
+find clusters for bootstrap sample 1158
+find clusters for bootstrap sample 1159
+find clusters for bootstrap sample 1160
+find clusters for bootstrap sample 1161
+find clusters for bootstrap sample 1162
+find clusters for bootstrap sample 1163
+find clusters for bootstrap sample 1164
+find clusters for bootstrap sample 1165
+find clusters for bootstrap sample 1166
+find clusters for bootstrap sample 1167
+find clusters for bootstrap sample 1168
+find clusters for bootstrap sample 1169
+find clusters for bootstrap sample 1170
+find clusters for bootstrap sample 1171
+find clusters for bootstrap sample 1172
+find clusters for bootstrap sample 1173
+find clusters for bootstrap sample 1174
+find clusters for bootstrap sample 1175
+find clusters for bootstrap sample 1176
+find clusters for bootstrap sample 1177
+find clusters for bootstrap sample 1178
+find clusters for bootstrap sample 1179
+find clusters for bootstrap sample 1180
+find clusters for bootstrap sample 1181
+find clusters for bootstrap sample 1182
+find clusters for bootstrap sample 1183
+find clusters for bootstrap sample 1184
+find clusters for bootstrap sample 1185
+find clusters for bootstrap sample 1186
+find clusters for bootstrap sample 1187
+find clusters for bootstrap sample 1188
+find clusters for bootstrap sample 1189
+find clusters for bootstrap sample 1190
+find clusters for bootstrap sample 1191
+find clusters for bootstrap sample 1192
+find clusters for bootstrap sample 1193
+find clusters for bootstrap sample 1194
+find clusters for bootstrap sample 1195
+find clusters for bootstrap sample 1196
+find clusters for bootstrap sample 1197
+find clusters for bootstrap sample 1198
+find clusters for bootstrap sample 1199
+find clusters for bootstrap sample 1200
+find clusters for bootstrap sample 1201
+find clusters for bootstrap sample 1202
+find clusters for bootstrap sample 1203
+find clusters for bootstrap sample 1204
+find clusters for bootstrap sample 1205
+find clusters for bootstrap sample 1206
+find clusters for bootstrap sample 1207
+find clusters for bootstrap sample 1208
+find clusters for bootstrap sample 1209
+find clusters for bootstrap sample 1210
+find clusters for bootstrap sample 1211
+find clusters for bootstrap sample 1212
+find clusters for bootstrap sample 1213
+find clusters for bootstrap sample 1214
+find clusters for bootstrap sample 1215
+find clusters for bootstrap sample 1216
+find clusters for bootstrap sample 1217
+find clusters for bootstrap sample 1218
+find clusters for bootstrap sample 1219
+find clusters for bootstrap sample 1220
+find clusters for bootstrap sample 1221
+find clusters for bootstrap sample 1222
+find clusters for bootstrap sample 1223
+find clusters for bootstrap sample 1224
+find clusters for bootstrap sample 1225
+find clusters for bootstrap sample 1226
+find clusters for bootstrap sample 1227
+find clusters for bootstrap sample 1228
+find clusters for bootstrap sample 1229
+find clusters for bootstrap sample 1230
+find clusters for bootstrap sample 1231
+find clusters for bootstrap sample 1232
+find clusters for bootstrap sample 1233
+find clusters for bootstrap sample 1234
+find clusters for bootstrap sample 1235
+find clusters for bootstrap sample 1236
+find clusters for bootstrap sample 1237
+find clusters for bootstrap sample 1238
+find clusters for bootstrap sample 1239
+find clusters for bootstrap sample 1240
+find clusters for bootstrap sample 1241
+find clusters for bootstrap sample 1242
+find clusters for bootstrap sample 1243
+find clusters for bootstrap sample 1244
+find clusters for bootstrap sample 1245
+find clusters for bootstrap sample 1246
+find clusters for bootstrap sample 1247
+find clusters for bootstrap sample 1248
+find clusters for bootstrap sample 1249
+find clusters for bootstrap sample 1250
+find clusters for bootstrap sample 1251
+find clusters for bootstrap sample 1252
+find clusters for bootstrap sample 1253
+find clusters for bootstrap sample 1254
+find clusters for bootstrap sample 1255
+find clusters for bootstrap sample 1256
+find clusters for bootstrap sample 1257
+find clusters for bootstrap sample 1258
+find clusters for bootstrap sample 1259
+find clusters for bootstrap sample 1260
+find clusters for bootstrap sample 1261
+find clusters for bootstrap sample 1262
+find clusters for bootstrap sample 1263
+find clusters for bootstrap sample 1264
+find clusters for bootstrap sample 1265
+find clusters for bootstrap sample 1266
+find clusters for bootstrap sample 1267
+find clusters for bootstrap sample 1268
+find clusters for bootstrap sample 1269
+find clusters for bootstrap sample 1270
+find clusters for bootstrap sample 1271
+find clusters for bootstrap sample 1272
+find clusters for bootstrap sample 1273
+find clusters for bootstrap sample 1274
+find clusters for bootstrap sample 1275
+find clusters for bootstrap sample 1276
+find clusters for bootstrap sample 1277
+find clusters for bootstrap sample 1278
+find clusters for bootstrap sample 1279
+find clusters for bootstrap sample 1280
+find clusters for bootstrap sample 1281
+find clusters for bootstrap sample 1282
+find clusters for bootstrap sample 1283
+find clusters for bootstrap sample 1284
+find clusters for bootstrap sample 1285
+find clusters for bootstrap sample 1286
+find clusters for bootstrap sample 1287
+find clusters for bootstrap sample 1288
+find clusters for bootstrap sample 1289
+find clusters for bootstrap sample 1290
+find clusters for bootstrap sample 1291
+find clusters for bootstrap sample 1292
+find clusters for bootstrap sample 1293
+find clusters for bootstrap sample 1294
+find clusters for bootstrap sample 1295
+find clusters for bootstrap sample 1296
+find clusters for bootstrap sample 1297
+find clusters for bootstrap sample 1298
+find clusters for bootstrap sample 1299
+find clusters for bootstrap sample 1300
+find clusters for bootstrap sample 1301
+find clusters for bootstrap sample 1302
+find clusters for bootstrap sample 1303
+find clusters for bootstrap sample 1304
+find clusters for bootstrap sample 1305
+find clusters for bootstrap sample 1306
+find clusters for bootstrap sample 1307
+find clusters for bootstrap sample 1308
+find clusters for bootstrap sample 1309
+find clusters for bootstrap sample 1310
+find clusters for bootstrap sample 1311
+find clusters for bootstrap sample 1312
+find clusters for bootstrap sample 1313
+find clusters for bootstrap sample 1314
+find clusters for bootstrap sample 1315
+find clusters for bootstrap sample 1316
+find clusters for bootstrap sample 1317
+find clusters for bootstrap sample 1318
+find clusters for bootstrap sample 1319
+find clusters for bootstrap sample 1320
+find clusters for bootstrap sample 1321
+find clusters for bootstrap sample 1322
+find clusters for bootstrap sample 1323
+find clusters for bootstrap sample 1324
+find clusters for bootstrap sample 1325
+find clusters for bootstrap sample 1326
+find clusters for bootstrap sample 1327
+find clusters for bootstrap sample 1328
+find clusters for bootstrap sample 1329
+find clusters for bootstrap sample 1330
+find clusters for bootstrap sample 1331
+find clusters for bootstrap sample 1332
+find clusters for bootstrap sample 1333
+find clusters for bootstrap sample 1334
+find clusters for bootstrap sample 1335
+find clusters for bootstrap sample 1336
+find clusters for bootstrap sample 1337
+find clusters for bootstrap sample 1338
+find clusters for bootstrap sample 1339
+find clusters for bootstrap sample 1340
+find clusters for bootstrap sample 1341
+find clusters for bootstrap sample 1342
+find clusters for bootstrap sample 1343
+find clusters for bootstrap sample 1344
+find clusters for bootstrap sample 1345
+find clusters for bootstrap sample 1346
+find clusters for bootstrap sample 1347
+find clusters for bootstrap sample 1348
+find clusters for bootstrap sample 1349
+find clusters for bootstrap sample 1350
+find clusters for bootstrap sample 1351
+find clusters for bootstrap sample 1352
+find clusters for bootstrap sample 1353
+find clusters for bootstrap sample 1354
+find clusters for bootstrap sample 1355
+find clusters for bootstrap sample 1356
+find clusters for bootstrap sample 1357
+find clusters for bootstrap sample 1358
+find clusters for bootstrap sample 1359
+find clusters for bootstrap sample 1360
+find clusters for bootstrap sample 1361
+find clusters for bootstrap sample 1362
+find clusters for bootstrap sample 1363
+find clusters for bootstrap sample 1364
+find clusters for bootstrap sample 1365
+find clusters for bootstrap sample 1366
+find clusters for bootstrap sample 1367
+find clusters for bootstrap sample 1368
+find clusters for bootstrap sample 1369
+find clusters for bootstrap sample 1370
+find clusters for bootstrap sample 1371
+find clusters for bootstrap sample 1372
+find clusters for bootstrap sample 1373
+find clusters for bootstrap sample 1374
+find clusters for bootstrap sample 1375
+find clusters for bootstrap sample 1376
+find clusters for bootstrap sample 1377
+find clusters for bootstrap sample 1378
+find clusters for bootstrap sample 1379
+find clusters for bootstrap sample 1380
+find clusters for bootstrap sample 1381
+find clusters for bootstrap sample 1382
+find clusters for bootstrap sample 1383
+find clusters for bootstrap sample 1384
+find clusters for bootstrap sample 1385
+find clusters for bootstrap sample 1386
+find clusters for bootstrap sample 1387
+find clusters for bootstrap sample 1388
+find clusters for bootstrap sample 1389
+find clusters for bootstrap sample 1390
+find clusters for bootstrap sample 1391
+find clusters for bootstrap sample 1392
+find clusters for bootstrap sample 1393
+find clusters for bootstrap sample 1394
+find clusters for bootstrap sample 1395
+find clusters for bootstrap sample 1396
+find clusters for bootstrap sample 1397
+find clusters for bootstrap sample 1398
+find clusters for bootstrap sample 1399
+find clusters for bootstrap sample 1400
+find clusters for bootstrap sample 1401
+find clusters for bootstrap sample 1402
+find clusters for bootstrap sample 1403
+find clusters for bootstrap sample 1404
+find clusters for bootstrap sample 1405
+find clusters for bootstrap sample 1406
+find clusters for bootstrap sample 1407
+find clusters for bootstrap sample 1408
+find clusters for bootstrap sample 1409
+find clusters for bootstrap sample 1410
+find clusters for bootstrap sample 1411
+find clusters for bootstrap sample 1412
+find clusters for bootstrap sample 1413
+find clusters for bootstrap sample 1414
+find clusters for bootstrap sample 1415
+find clusters for bootstrap sample 1416
+find clusters for bootstrap sample 1417
+find clusters for bootstrap sample 1418
+find clusters for bootstrap sample 1419
+find clusters for bootstrap sample 1420
+find clusters for bootstrap sample 1421
+find clusters for bootstrap sample 1422
+find clusters for bootstrap sample 1423
+find clusters for bootstrap sample 1424
+find clusters for bootstrap sample 1425
+find clusters for bootstrap sample 1426
+find clusters for bootstrap sample 1427
+find clusters for bootstrap sample 1428
+find clusters for bootstrap sample 1429
+find clusters for bootstrap sample 1430
+find clusters for bootstrap sample 1431
+find clusters for bootstrap sample 1432
+find clusters for bootstrap sample 1433
+find clusters for bootstrap sample 1434
+find clusters for bootstrap sample 1435
+find clusters for bootstrap sample 1436
+find clusters for bootstrap sample 1437
+find clusters for bootstrap sample 1438
+find clusters for bootstrap sample 1439
+find clusters for bootstrap sample 1440
+find clusters for bootstrap sample 1441
+find clusters for bootstrap sample 1442
+find clusters for bootstrap sample 1443
+find clusters for bootstrap sample 1444
+find clusters for bootstrap sample 1445
+find clusters for bootstrap sample 1446
+find clusters for bootstrap sample 1447
+find clusters for bootstrap sample 1448
+find clusters for bootstrap sample 1449
+find clusters for bootstrap sample 1450
+find clusters for bootstrap sample 1451
+find clusters for bootstrap sample 1452
+find clusters for bootstrap sample 1453
+find clusters for bootstrap sample 1454
+find clusters for bootstrap sample 1455
+find clusters for bootstrap sample 1456
+find clusters for bootstrap sample 1457
+find clusters for bootstrap sample 1458
+find clusters for bootstrap sample 1459
+find clusters for bootstrap sample 1460
+find clusters for bootstrap sample 1461
+find clusters for bootstrap sample 1462
+find clusters for bootstrap sample 1463
+find clusters for bootstrap sample 1464
+find clusters for bootstrap sample 1465
+find clusters for bootstrap sample 1466
+find clusters for bootstrap sample 1467
+find clusters for bootstrap sample 1468
+find clusters for bootstrap sample 1469
+find clusters for bootstrap sample 1470
+find clusters for bootstrap sample 1471
+find clusters for bootstrap sample 1472
+find clusters for bootstrap sample 1473
+find clusters for bootstrap sample 1474
+find clusters for bootstrap sample 1475
+find clusters for bootstrap sample 1476
+find clusters for bootstrap sample 1477
+find clusters for bootstrap sample 1478
+find clusters for bootstrap sample 1479
+find clusters for bootstrap sample 1480
+find clusters for bootstrap sample 1481
+find clusters for bootstrap sample 1482
+find clusters for bootstrap sample 1483
+find clusters for bootstrap sample 1484
+find clusters for bootstrap sample 1485
+find clusters for bootstrap sample 1486
+find clusters for bootstrap sample 1487
+find clusters for bootstrap sample 1488
+find clusters for bootstrap sample 1489
+find clusters for bootstrap sample 1490
+find clusters for bootstrap sample 1491
+find clusters for bootstrap sample 1492
+find clusters for bootstrap sample 1493
+find clusters for bootstrap sample 1494
+find clusters for bootstrap sample 1495
+find clusters for bootstrap sample 1496
+find clusters for bootstrap sample 1497
+find clusters for bootstrap sample 1498
+find clusters for bootstrap sample 1499
+find clusters for bootstrap sample 1500
+find clusters for bootstrap sample 1501
+find clusters for bootstrap sample 1502
+find clusters for bootstrap sample 1503
+find clusters for bootstrap sample 1504
+find clusters for bootstrap sample 1505
+find clusters for bootstrap sample 1506
+find clusters for bootstrap sample 1507
+find clusters for bootstrap sample 1508
+find clusters for bootstrap sample 1509
+find clusters for bootstrap sample 1510
+find clusters for bootstrap sample 1511
+find clusters for bootstrap sample 1512
+find clusters for bootstrap sample 1513
+find clusters for bootstrap sample 1514
+find clusters for bootstrap sample 1515
+find clusters for bootstrap sample 1516
+find clusters for bootstrap sample 1517
+find clusters for bootstrap sample 1518
+find clusters for bootstrap sample 1519
+find clusters for bootstrap sample 1520
+find clusters for bootstrap sample 1521
+find clusters for bootstrap sample 1522
+find clusters for bootstrap sample 1523
+find clusters for bootstrap sample 1524
+find clusters for bootstrap sample 1525
+find clusters for bootstrap sample 1526
+find clusters for bootstrap sample 1527
+find clusters for bootstrap sample 1528
+find clusters for bootstrap sample 1529
+find clusters for bootstrap sample 1530
+find clusters for bootstrap sample 1531
+find clusters for bootstrap sample 1532
+find clusters for bootstrap sample 1533
+find clusters for bootstrap sample 1534
+find clusters for bootstrap sample 1535
+find clusters for bootstrap sample 1536
+find clusters for bootstrap sample 1537
+find clusters for bootstrap sample 1538
+find clusters for bootstrap sample 1539
+find clusters for bootstrap sample 1540
+find clusters for bootstrap sample 1541
+find clusters for bootstrap sample 1542
+find clusters for bootstrap sample 1543
+find clusters for bootstrap sample 1544
+find clusters for bootstrap sample 1545
+find clusters for bootstrap sample 1546
+find clusters for bootstrap sample 1547
+find clusters for bootstrap sample 1548
+find clusters for bootstrap sample 1549
+find clusters for bootstrap sample 1550
+find clusters for bootstrap sample 1551
+find clusters for bootstrap sample 1552
+find clusters for bootstrap sample 1553
+find clusters for bootstrap sample 1554
+find clusters for bootstrap sample 1555
+find clusters for bootstrap sample 1556
+find clusters for bootstrap sample 1557
+find clusters for bootstrap sample 1558
+find clusters for bootstrap sample 1559
+find clusters for bootstrap sample 1560
+find clusters for bootstrap sample 1561
+find clusters for bootstrap sample 1562
+find clusters for bootstrap sample 1563
+find clusters for bootstrap sample 1564
+find clusters for bootstrap sample 1565
+find clusters for bootstrap sample 1566
+find clusters for bootstrap sample 1567
+find clusters for bootstrap sample 1568
+find clusters for bootstrap sample 1569
+find clusters for bootstrap sample 1570
+find clusters for bootstrap sample 1571
+find clusters for bootstrap sample 1572
+find clusters for bootstrap sample 1573
+find clusters for bootstrap sample 1574
+find clusters for bootstrap sample 1575
+find clusters for bootstrap sample 1576
+find clusters for bootstrap sample 1577
+find clusters for bootstrap sample 1578
+find clusters for bootstrap sample 1579
+find clusters for bootstrap sample 1580
+find clusters for bootstrap sample 1581
+find clusters for bootstrap sample 1582
+find clusters for bootstrap sample 1583
+find clusters for bootstrap sample 1584
+find clusters for bootstrap sample 1585
+find clusters for bootstrap sample 1586
+find clusters for bootstrap sample 1587
+find clusters for bootstrap sample 1588
+find clusters for bootstrap sample 1589
+find clusters for bootstrap sample 1590
+find clusters for bootstrap sample 1591
+find clusters for bootstrap sample 1592
+find clusters for bootstrap sample 1593
+find clusters for bootstrap sample 1594
+find clusters for bootstrap sample 1595
+find clusters for bootstrap sample 1596
+find clusters for bootstrap sample 1597
+find clusters for bootstrap sample 1598
+find clusters for bootstrap sample 1599
+find clusters for bootstrap sample 1600
+find clusters for bootstrap sample 1601
+find clusters for bootstrap sample 1602
+find clusters for bootstrap sample 1603
+find clusters for bootstrap sample 1604
+find clusters for bootstrap sample 1605
+find clusters for bootstrap sample 1606
+find clusters for bootstrap sample 1607
+find clusters for bootstrap sample 1608
+find clusters for bootstrap sample 1609
+find clusters for bootstrap sample 1610
+find clusters for bootstrap sample 1611
+find clusters for bootstrap sample 1612
+find clusters for bootstrap sample 1613
+find clusters for bootstrap sample 1614
+find clusters for bootstrap sample 1615
+find clusters for bootstrap sample 1616
+find clusters for bootstrap sample 1617
+find clusters for bootstrap sample 1618
+find clusters for bootstrap sample 1619
+find clusters for bootstrap sample 1620
+find clusters for bootstrap sample 1621
+find clusters for bootstrap sample 1622
+find clusters for bootstrap sample 1623
+find clusters for bootstrap sample 1624
+find clusters for bootstrap sample 1625
+find clusters for bootstrap sample 1626
+find clusters for bootstrap sample 1627
+find clusters for bootstrap sample 1628
+find clusters for bootstrap sample 1629
+find clusters for bootstrap sample 1630
+find clusters for bootstrap sample 1631
+find clusters for bootstrap sample 1632
+find clusters for bootstrap sample 1633
+find clusters for bootstrap sample 1634
+find clusters for bootstrap sample 1635
+find clusters for bootstrap sample 1636
+find clusters for bootstrap sample 1637
+find clusters for bootstrap sample 1638
+find clusters for bootstrap sample 1639
+find clusters for bootstrap sample 1640
+find clusters for bootstrap sample 1641
+find clusters for bootstrap sample 1642
+find clusters for bootstrap sample 1643
+find clusters for bootstrap sample 1644
+find clusters for bootstrap sample 1645
+find clusters for bootstrap sample 1646
+find clusters for bootstrap sample 1647
+find clusters for bootstrap sample 1648
+find clusters for bootstrap sample 1649
+find clusters for bootstrap sample 1650
+find clusters for bootstrap sample 1651
+find clusters for bootstrap sample 1652
+find clusters for bootstrap sample 1653
+find clusters for bootstrap sample 1654
+find clusters for bootstrap sample 1655
+find clusters for bootstrap sample 1656
+find clusters for bootstrap sample 1657
+find clusters for bootstrap sample 1658
+find clusters for bootstrap sample 1659
+find clusters for bootstrap sample 1660
+find clusters for bootstrap sample 1661
+find clusters for bootstrap sample 1662
+find clusters for bootstrap sample 1663
+find clusters for bootstrap sample 1664
+find clusters for bootstrap sample 1665
+find clusters for bootstrap sample 1666
+find clusters for bootstrap sample 1667
+find clusters for bootstrap sample 1668
+find clusters for bootstrap sample 1669
+find clusters for bootstrap sample 1670
+find clusters for bootstrap sample 1671
+find clusters for bootstrap sample 1672
+find clusters for bootstrap sample 1673
+find clusters for bootstrap sample 1674
+find clusters for bootstrap sample 1675
+find clusters for bootstrap sample 1676
+find clusters for bootstrap sample 1677
+find clusters for bootstrap sample 1678
+find clusters for bootstrap sample 1679
+find clusters for bootstrap sample 1680
+find clusters for bootstrap sample 1681
+find clusters for bootstrap sample 1682
+find clusters for bootstrap sample 1683
+find clusters for bootstrap sample 1684
+find clusters for bootstrap sample 1685
+find clusters for bootstrap sample 1686
+find clusters for bootstrap sample 1687
+find clusters for bootstrap sample 1688
+find clusters for bootstrap sample 1689
+find clusters for bootstrap sample 1690
+find clusters for bootstrap sample 1691
+find clusters for bootstrap sample 1692
+find clusters for bootstrap sample 1693
+find clusters for bootstrap sample 1694
+find clusters for bootstrap sample 1695
+find clusters for bootstrap sample 1696
+find clusters for bootstrap sample 1697
+find clusters for bootstrap sample 1698
+find clusters for bootstrap sample 1699
+find clusters for bootstrap sample 1700
+find clusters for bootstrap sample 1701
+find clusters for bootstrap sample 1702
+find clusters for bootstrap sample 1703
+find clusters for bootstrap sample 1704
+find clusters for bootstrap sample 1705
+find clusters for bootstrap sample 1706
+find clusters for bootstrap sample 1707
+find clusters for bootstrap sample 1708
+find clusters for bootstrap sample 1709
+find clusters for bootstrap sample 1710
+find clusters for bootstrap sample 1711
+find clusters for bootstrap sample 1712
+find clusters for bootstrap sample 1713
+find clusters for bootstrap sample 1714
+find clusters for bootstrap sample 1715
+find clusters for bootstrap sample 1716
+find clusters for bootstrap sample 1717
+find clusters for bootstrap sample 1718
+find clusters for bootstrap sample 1719
+find clusters for bootstrap sample 1720
+find clusters for bootstrap sample 1721
+find clusters for bootstrap sample 1722
+find clusters for bootstrap sample 1723
+find clusters for bootstrap sample 1724
+find clusters for bootstrap sample 1725
+find clusters for bootstrap sample 1726
+find clusters for bootstrap sample 1727
+find clusters for bootstrap sample 1728
+find clusters for bootstrap sample 1729
+find clusters for bootstrap sample 1730
+find clusters for bootstrap sample 1731
+find clusters for bootstrap sample 1732
+find clusters for bootstrap sample 1733
+find clusters for bootstrap sample 1734
+find clusters for bootstrap sample 1735
+find clusters for bootstrap sample 1736
+find clusters for bootstrap sample 1737
+find clusters for bootstrap sample 1738
+find clusters for bootstrap sample 1739
+find clusters for bootstrap sample 1740
+find clusters for bootstrap sample 1741
+find clusters for bootstrap sample 1742
+find clusters for bootstrap sample 1743
+find clusters for bootstrap sample 1744
+find clusters for bootstrap sample 1745
+find clusters for bootstrap sample 1746
+find clusters for bootstrap sample 1747
+find clusters for bootstrap sample 1748
+find clusters for bootstrap sample 1749
+find clusters for bootstrap sample 1750
+find clusters for bootstrap sample 1751
+find clusters for bootstrap sample 1752
+find clusters for bootstrap sample 1753
+find clusters for bootstrap sample 1754
+find clusters for bootstrap sample 1755
+find clusters for bootstrap sample 1756
+find clusters for bootstrap sample 1757
+find clusters for bootstrap sample 1758
+find clusters for bootstrap sample 1759
+find clusters for bootstrap sample 1760
+find clusters for bootstrap sample 1761
+find clusters for bootstrap sample 1762
+find clusters for bootstrap sample 1763
+find clusters for bootstrap sample 1764
+find clusters for bootstrap sample 1765
+find clusters for bootstrap sample 1766
+find clusters for bootstrap sample 1767
+find clusters for bootstrap sample 1768
+find clusters for bootstrap sample 1769
+find clusters for bootstrap sample 1770
+find clusters for bootstrap sample 1771
+find clusters for bootstrap sample 1772
+find clusters for bootstrap sample 1773
+find clusters for bootstrap sample 1774
+find clusters for bootstrap sample 1775
+find clusters for bootstrap sample 1776
+find clusters for bootstrap sample 1777
+find clusters for bootstrap sample 1778
+find clusters for bootstrap sample 1779
+find clusters for bootstrap sample 1780
+find clusters for bootstrap sample 1781
+find clusters for bootstrap sample 1782
+find clusters for bootstrap sample 1783
+find clusters for bootstrap sample 1784
+find clusters for bootstrap sample 1785
+find clusters for bootstrap sample 1786
+find clusters for bootstrap sample 1787
+find clusters for bootstrap sample 1788
+find clusters for bootstrap sample 1789
+find clusters for bootstrap sample 1790
+find clusters for bootstrap sample 1791
+find clusters for bootstrap sample 1792
+find clusters for bootstrap sample 1793
+find clusters for bootstrap sample 1794
+find clusters for bootstrap sample 1795
+find clusters for bootstrap sample 1796
+find clusters for bootstrap sample 1797
+find clusters for bootstrap sample 1798
+find clusters for bootstrap sample 1799
+find clusters for bootstrap sample 1800
+find clusters for bootstrap sample 1801
+find clusters for bootstrap sample 1802
+find clusters for bootstrap sample 1803
+find clusters for bootstrap sample 1804
+find clusters for bootstrap sample 1805
+find clusters for bootstrap sample 1806
+find clusters for bootstrap sample 1807
+find clusters for bootstrap sample 1808
+find clusters for bootstrap sample 1809
+find clusters for bootstrap sample 1810
+find clusters for bootstrap sample 1811
+find clusters for bootstrap sample 1812
+find clusters for bootstrap sample 1813
+find clusters for bootstrap sample 1814
+find clusters for bootstrap sample 1815
+find clusters for bootstrap sample 1816
+find clusters for bootstrap sample 1817
+find clusters for bootstrap sample 1818
+find clusters for bootstrap sample 1819
+find clusters for bootstrap sample 1820
+find clusters for bootstrap sample 1821
+find clusters for bootstrap sample 1822
+find clusters for bootstrap sample 1823
+find clusters for bootstrap sample 1824
+find clusters for bootstrap sample 1825
+find clusters for bootstrap sample 1826
+find clusters for bootstrap sample 1827
+find clusters for bootstrap sample 1828
+find clusters for bootstrap sample 1829
+find clusters for bootstrap sample 1830
+find clusters for bootstrap sample 1831
+find clusters for bootstrap sample 1832
+find clusters for bootstrap sample 1833
+find clusters for bootstrap sample 1834
+find clusters for bootstrap sample 1835
+find clusters for bootstrap sample 1836
+find clusters for bootstrap sample 1837
+find clusters for bootstrap sample 1838
+find clusters for bootstrap sample 1839
+find clusters for bootstrap sample 1840
+find clusters for bootstrap sample 1841
+find clusters for bootstrap sample 1842
+find clusters for bootstrap sample 1843
+find clusters for bootstrap sample 1844
+find clusters for bootstrap sample 1845
+find clusters for bootstrap sample 1846
+find clusters for bootstrap sample 1847
+find clusters for bootstrap sample 1848
+find clusters for bootstrap sample 1849
+find clusters for bootstrap sample 1850
+find clusters for bootstrap sample 1851
+find clusters for bootstrap sample 1852
+find clusters for bootstrap sample 1853
+find clusters for bootstrap sample 1854
+find clusters for bootstrap sample 1855
+find clusters for bootstrap sample 1856
+find clusters for bootstrap sample 1857
+find clusters for bootstrap sample 1858
+find clusters for bootstrap sample 1859
+find clusters for bootstrap sample 1860
+find clusters for bootstrap sample 1861
+find clusters for bootstrap sample 1862
+find clusters for bootstrap sample 1863
+find clusters for bootstrap sample 1864
+find clusters for bootstrap sample 1865
+find clusters for bootstrap sample 1866
+find clusters for bootstrap sample 1867
+find clusters for bootstrap sample 1868
+find clusters for bootstrap sample 1869
+find clusters for bootstrap sample 1870
+find clusters for bootstrap sample 1871
+find clusters for bootstrap sample 1872
+find clusters for bootstrap sample 1873
+find clusters for bootstrap sample 1874
+find clusters for bootstrap sample 1875
+find clusters for bootstrap sample 1876
+find clusters for bootstrap sample 1877
+find clusters for bootstrap sample 1878
+find clusters for bootstrap sample 1879
+find clusters for bootstrap sample 1880
+find clusters for bootstrap sample 1881
+find clusters for bootstrap sample 1882
+find clusters for bootstrap sample 1883
+find clusters for bootstrap sample 1884
+find clusters for bootstrap sample 1885
+find clusters for bootstrap sample 1886
+find clusters for bootstrap sample 1887
+find clusters for bootstrap sample 1888
+find clusters for bootstrap sample 1889
+find clusters for bootstrap sample 1890
+find clusters for bootstrap sample 1891
+find clusters for bootstrap sample 1892
+find clusters for bootstrap sample 1893
+find clusters for bootstrap sample 1894
+find clusters for bootstrap sample 1895
+find clusters for bootstrap sample 1896
+find clusters for bootstrap sample 1897
+find clusters for bootstrap sample 1898
+find clusters for bootstrap sample 1899
+find clusters for bootstrap sample 1900
+find clusters for bootstrap sample 1901
+find clusters for bootstrap sample 1902
+find clusters for bootstrap sample 1903
+find clusters for bootstrap sample 1904
+find clusters for bootstrap sample 1905
+find clusters for bootstrap sample 1906
+find clusters for bootstrap sample 1907
+find clusters for bootstrap sample 1908
+find clusters for bootstrap sample 1909
+find clusters for bootstrap sample 1910
+find clusters for bootstrap sample 1911
+find clusters for bootstrap sample 1912
+find clusters for bootstrap sample 1913
+find clusters for bootstrap sample 1914
+find clusters for bootstrap sample 1915
+find clusters for bootstrap sample 1916
+find clusters for bootstrap sample 1917
+find clusters for bootstrap sample 1918
+find clusters for bootstrap sample 1919
+find clusters for bootstrap sample 1920
+find clusters for bootstrap sample 1921
+find clusters for bootstrap sample 1922
+find clusters for bootstrap sample 1923
+find clusters for bootstrap sample 1924
+find clusters for bootstrap sample 1925
+find clusters for bootstrap sample 1926
+find clusters for bootstrap sample 1927
+find clusters for bootstrap sample 1928
+find clusters for bootstrap sample 1929
+find clusters for bootstrap sample 1930
+find clusters for bootstrap sample 1931
+find clusters for bootstrap sample 1932
+find clusters for bootstrap sample 1933
+find clusters for bootstrap sample 1934
+find clusters for bootstrap sample 1935
+find clusters for bootstrap sample 1936
+find clusters for bootstrap sample 1937
+find clusters for bootstrap sample 1938
+find clusters for bootstrap sample 1939
+find clusters for bootstrap sample 1940
+find clusters for bootstrap sample 1941
+find clusters for bootstrap sample 1942
+find clusters for bootstrap sample 1943
+find clusters for bootstrap sample 1944
+find clusters for bootstrap sample 1945
+find clusters for bootstrap sample 1946
+find clusters for bootstrap sample 1947
+find clusters for bootstrap sample 1948
+find clusters for bootstrap sample 1949
+find clusters for bootstrap sample 1950
+find clusters for bootstrap sample 1951
+find clusters for bootstrap sample 1952
+find clusters for bootstrap sample 1953
+find clusters for bootstrap sample 1954
+find clusters for bootstrap sample 1955
+find clusters for bootstrap sample 1956
+find clusters for bootstrap sample 1957
+find clusters for bootstrap sample 1958
+find clusters for bootstrap sample 1959
+find clusters for bootstrap sample 1960
+find clusters for bootstrap sample 1961
+find clusters for bootstrap sample 1962
+find clusters for bootstrap sample 1963
+find clusters for bootstrap sample 1964
+find clusters for bootstrap sample 1965
+find clusters for bootstrap sample 1966
+find clusters for bootstrap sample 1967
+find clusters for bootstrap sample 1968
+find clusters for bootstrap sample 1969
+find clusters for bootstrap sample 1970
+find clusters for bootstrap sample 1971
+find clusters for bootstrap sample 1972
+find clusters for bootstrap sample 1973
+find clusters for bootstrap sample 1974
+find clusters for bootstrap sample 1975
+find clusters for bootstrap sample 1976
+find clusters for bootstrap sample 1977
+find clusters for bootstrap sample 1978
+find clusters for bootstrap sample 1979
+find clusters for bootstrap sample 1980
+find clusters for bootstrap sample 1981
+find clusters for bootstrap sample 1982
+find clusters for bootstrap sample 1983
+find clusters for bootstrap sample 1984
+find clusters for bootstrap sample 1985
+find clusters for bootstrap sample 1986
+find clusters for bootstrap sample 1987
+find clusters for bootstrap sample 1988
+find clusters for bootstrap sample 1989
+find clusters for bootstrap sample 1990
+find clusters for bootstrap sample 1991
+find clusters for bootstrap sample 1992
+find clusters for bootstrap sample 1993
+find clusters for bootstrap sample 1994
+find clusters for bootstrap sample 1995
+find clusters for bootstrap sample 1996
+find clusters for bootstrap sample 1997
+find clusters for bootstrap sample 1998
+find clusters for bootstrap sample 1999
+</pre></div>
+</div>
+<p>estimate t-test based on original phase coherence betas</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># estimate t-values and f-values</span>
+<span class="n">se</span> <span class="o">=</span> <span class="n">betas</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.sqrt" title="View documentation for numpy.sqrt"><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span></a><span class="p">(</span><span class="n">betas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">t_vals</span> <span class="o">=</span> <span class="n">betas</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">se</span>
+<span class="n">f_vals</span> <span class="o">=</span> <span class="n">t_vals</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="c1"># transpose for clustering</span>
+<span class="n">f_vals</span> <span class="o">=</span> <span class="n">f_vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+<span class="n">f_vals</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.transpose" title="View documentation for numpy.transpose"><span class="n">np</span><span class="o">.</span><span class="n">transpose</span></a><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">f_vals</span> <span class="o">=</span> <span class="n">f_vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_times</span> <span class="o">*</span> <span class="n">n_channels</span><span class="p">))</span>
+
+<span class="c1"># find clusters</span>
+<span class="n">clusters</span><span class="p">,</span> <span class="n">cluster_stats</span> <span class="o">=</span> <span class="n">_find_clusters</span><span class="p">(</span><span class="n">f_vals</span><span class="p">,</span>
+                                         <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+                                         <span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span>
+                                         <span class="n">tail</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>compute cluster significance and get mask por plot
+here, we use the distribution of cluster mass bootstrap values</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cluster_thresh</span> <span class="o">=</span> <a href="https://www.numpy.org/devdocs/reference/generated/numpy.quantile.html#numpy.quantile" title="View documentation for numpy.quantile"><span class="n">np</span><span class="o">.</span><span class="n">quantile</span></a><span class="p">(</span><span class="n">cluster_H0</span><span class="p">,</span> <span class="p">[</span><span class="o">.</span><span class="mi">99</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># xlsuers above alpha level</span>
+<span class="n">sig_mask</span> <span class="o">=</span> <span class="n">cluster_stats</span> <span class="o">&gt;</span> <span class="n">cluster_thresh</span>
+</pre></div>
+</div>
+<p>back projection to channels x time points</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t_vals</span> <span class="o">=</span> <span class="n">t_vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+<span class="n">f_vals</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.transpose" title="View documentation for numpy.transpose"><span class="n">np</span><span class="o">.</span><span class="n">transpose</span></a><span class="p">(</span><span class="n">f_vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_times</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sig_mask</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.transpose" title="View documentation for numpy.transpose"><span class="n">np</span><span class="o">.</span><span class="n">transpose</span></a><span class="p">(</span><span class="n">sig_mask</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_times</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>create evoked object containing the resulting t-values</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">group_t</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">group_t</span><span class="p">[</span><span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.EvokedArray.html#mne.EvokedArray" title="View documentation for mne.evoked.EvokedArray"><span class="n">EvokedArray</span></a><span class="p">(</span><span class="n">t_vals</span><span class="p">,</span> <span class="n">epochs_info</span><span class="p">,</span> <span class="n">tmin</span><span class="p">)</span>
+
+<span class="c1"># electrodes to plot (reverse order to be compatible whit LIMO paper)</span>
+<span class="n">picks</span> <span class="o">=</span> <span class="n">group_t</span><span class="p">[</span><span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1"># plot t-values, masking non-significant time points.</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">group_t</span><span class="p">[</span><span class="s1">&#39;phase-coherence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot_image</span><span class="p">(</span><span class="n">time_unit</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span>
+                                            <span class="n">picks</span><span class="o">=</span><span class="n">picks</span><span class="p">,</span>
+                                            <span class="n">mask</span><span class="o">=</span><span class="n">sig_mask</span><span class="p">,</span>
+                                            <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="o">-.</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                            <span class="n">unit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="c1"># keep values scale</span>
+                                            <span class="n">scalings</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;T-value&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Group-level effect of phase-coherence&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_plot_spatiotemporal_tfce_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_spatiotemporal_tfce_001.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 133 minutes  31.569 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-limo-examples-group-level-plot-spatiotemporal-tfce-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" download="" href="../../_downloads/a80ac113248adc84f41411b555246389/plot_spatiotemporal_tfce.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_spatiotemporal_tfce.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" download="" href="../../_downloads/49eff6fcdf7ad38121eaf1bbf96fcdad/plot_spatiotemporal_tfce.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_spatiotemporal_tfce.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+</div>
+
+<!-- Github "fork me" ribbon -->
+<!--<a href="https://github.com/autoreject/autoreject"><img style="position: absolute; top: 50px; right: 0; border: 0;" -->
+<!--src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"-->
+<!--alt="Fork me on GitHub"-->
+<!--data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>-->
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, José C. García Alanis.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
